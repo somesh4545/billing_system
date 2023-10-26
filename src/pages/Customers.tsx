@@ -20,7 +20,7 @@ export default function Customers() {
           <CustomersBillingStatusWidget />
         </div>
 
-        <div className="w-full bg-white rounded-xl p-4">
+        <div className="w-full bg-white rounded-xl p-4 grid gap-8">
           <CustomersListHeadings />
           <CustomersList />
         </div>

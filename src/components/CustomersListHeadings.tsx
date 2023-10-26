@@ -3,7 +3,7 @@ import React from "react";
 export default function CustomersListHeadings() {
   return (
     <div className="flex justify-between items-center">
-      <span>Customers</span>
+      <span className="text-xl">Customers</span>
       <div className="text-xs flex gap-4">
         <div className="border w-max p-2 rounded">
           <select className="cursor-pointer">
