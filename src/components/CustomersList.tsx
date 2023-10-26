@@ -31,12 +31,12 @@ export default function CustomersList({
 
   useEffect(function () {
     getCustomers();
-  }, []);
+  }, [openPanel]);
 
   return (
     <>
       <table
-        className={"text-sm customer-list " + (openPanel ? "w-max" : "w-full")}
+        className={"text-sm customer-list h-max " + (openPanel ? "w-max" : "w-full")}
       >
         <thead>
           <tr>

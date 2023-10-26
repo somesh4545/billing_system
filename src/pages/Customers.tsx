@@ -30,7 +30,7 @@ export default function Customers() {
           <CustomersListHeadings />
           <div className={openPanel ? "grid grid-cols-[auto_1fr] gap-4 grid-rows-1" : ""}>
             <CustomersList openPanel={openPanel} closePanel={() => setOpenPanel(false)} />
-            {openPanel && <AddCustomerWidget />}
+            {openPanel && <AddCustomerWidget closePanel={() => setOpenPanel(false)} />}
           </div>
         </div>
       </div>
