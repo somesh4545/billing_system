@@ -14,7 +14,7 @@ export default function App() {
       <Sidebar />
       <div
         className="grid grid-cols-1"
-        style={{ gridTemplateRows: "60px 1fr" }}
+        style={{ gridTemplateRows: "auto 1fr" }}
       >
         <Topbar />
         <BrowserRouter>
