@@ -12,7 +12,15 @@ export default function CustomersList() {
     const request = axios.get(`${apiBaseURL}/api/customers/list`);
     const { data } = await request;
 
-    setCustomers(data?.companies);
+    if (data?.companies?.length > 0) {
+      const companies = data.companies.sort((a: Company, b: Company) => {
+        if (a.CompanyName < b.CompanyName) return -1;
+        if (a.CompanyName > b.CompanyName) return 1;
+        return 0;
+      });
+
+      setCustomers(companies);
+    }
   };
 
   useEffect(function () {
@@ -50,18 +58,19 @@ export default function CustomersList() {
               {customer.CompanyEmployeeCount < 2 ? "Worker" : "Workers"}
             </td>
             <td>
-              {customer.contacts.length > 0 && customer.contacts[0].ContactName}
+              {customer?.contacts?.length > 0 &&
+                customer?.contacts[0].ContactName}
             </td>
             <td>
               {"+"}
-              {customer.contacts.length > 0 &&
-                customer.contacts[0].ContactPhonePrefix}{" "}
-              {customer.contacts.length > 0 &&
-                customer.contacts[0].ContactPhone}
+              {customer?.contacts?.length > 0 &&
+                customer?.contacts[0].ContactPhonePrefix}{" "}
+              {customer?.contacts?.length > 0 &&
+                customer?.contacts[0].ContactPhone}
             </td>
             <td>
-              {customer.addresses.length > 0 &&
-                customer.addresses[0].CompanyStreetAddress}
+              {customer?.addresses?.length > 0 &&
+                customer?.addresses[0].CompanyStreetAddress}
             </td>
             <td>
               <button>Active</button>
