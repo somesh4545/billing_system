@@ -16,7 +16,7 @@ const images = [
 
 export default function Sidebar() {
   return (
-    <div className="h-screen bg-white flex flex-col justify-center items-center">
+    <div className="h-screen bg-white flex flex-col justify-center items-center border-r">
       {images.map((image, _) => (
         <div
           key={image.alt}

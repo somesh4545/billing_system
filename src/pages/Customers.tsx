@@ -1,6 +1,8 @@
 import React from "react";
 import CustomersStatusWidget from "../components/CustomersStatusWidget";
 import CustomersBillingStatusWidget from "../components/CustomersBillingStatusWidget";
+import CustomersListHeadings from "../components/CustomersListHeadings";
+import CustomersList from "../components/CustomersList";
 
 export default function Customers() {
   return (
@@ -12,9 +14,16 @@ export default function Customers() {
         </button>
       </div>
 
-      <div className="grid md:grid-row-1 md:grid-cols-[1fr_1fr] grid-cols-1 grid-row-[1fr_1fr] gap-4">
-        <CustomersStatusWidget />
-        <CustomersBillingStatusWidget />
+      <div className="grid gap-4">
+        <div className="grid md:grid-row-1 md:grid-cols-[1fr_1fr] grid-cols-1 grid-row-[1fr_1fr] gap-4">
+          <CustomersStatusWidget />
+          <CustomersBillingStatusWidget />
+        </div>
+
+        <div className="w-full bg-white rounded-xl p-4">
+          <CustomersListHeadings />
+          <CustomersList />
+        </div>
       </div>
     </div>
   );
