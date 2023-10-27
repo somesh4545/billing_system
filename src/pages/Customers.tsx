@@ -10,14 +10,18 @@ import { openPanel } from "../app/customer.slice";
 export default function Customers() {
   const dispatch = useDispatch();
 
-  const { isPanelOpen } = useSelector((state: any) => state.customers);
+  const { isPanelOpen, isCustomerDetailsPanelOpen } = useSelector(
+    (state: any) => state.customers
+  );
 
   return (
     <div className="p-4">
       <div className="flex justify-between py-4">
         <span>Customers Summary</span>
         <button
-          onClick={() => dispatch(openPanel())}
+          onClick={() => {
+            dispatch(openPanel());
+          }}
           className="bg-blue-600 py-2 px-4 rounded text-white"
         >
           + Add New Customer
@@ -34,11 +38,18 @@ export default function Customers() {
           <CustomersListHeadings />
           <div
             className={
-              isPanelOpen ? "grid grid-cols-[auto_1fr] gap-4 grid-rows-1" : ""
+              isPanelOpen || isCustomerDetailsPanelOpen
+                ? "grid gap-4 grid-rows-1 " + (isCustomerDetailsPanelOpen
+                  ? "grid-cols-[auto_1fr_1fr]"
+                  : "grid-cols-[auto_1fr]")
+                : ""
             }
           >
             <CustomersList />
-            {isPanelOpen && <AddCustomerWidget />}
+            {isCustomerDetailsPanelOpen && "Customer DEta"}
+            {(isPanelOpen || isCustomerDetailsPanelOpen) && (
+              <AddCustomerWidget />
+            )}
           </div>
         </div>
       </div>

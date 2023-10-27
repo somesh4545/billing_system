@@ -1,11 +1,14 @@
 import React, { useRef } from "react";
 import dialcodes from "../assets/dialcodes.json";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { closePanel, updateWasRecordAdded } from "../app/customer.slice";
 
 export default function AddCustomerWidget() {
   const dispatch = useDispatch();
+  const { isCustomerDetailsPanelOpen, customerSelected } = useSelector(
+    (state: any) => state.customers
+  );
 
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
@@ -100,7 +103,11 @@ export default function AddCustomerWidget() {
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
-      <h2>Add a New Customer</h2>
+      <h2>
+        {isCustomerDetailsPanelOpen
+          ? "Update Customer Details"
+          : "Add new Customer Details"}
+      </h2>
 
       <form
         ref={form}
@@ -117,6 +124,9 @@ export default function AddCustomerWidget() {
               required
               className="p-2 rounded-sm border"
               type="text"
+              defaultValue={
+                isCustomerDetailsPanelOpen ? customerSelected.CompanyName : null
+              }
               tabIndex={1}
               name="companyName"
               placeholder="Name"
@@ -126,6 +136,11 @@ export default function AddCustomerWidget() {
               className="p-2 rounded-sm border"
               type="number"
               tabIndex={2}
+              defaultValue={
+                isCustomerDetailsPanelOpen
+                  ? customerSelected.CompanyEmployeeCount
+                  : null
+              }
               name="companyEmployeeCount"
               placeholder="No of Employees"
             />
@@ -143,6 +158,11 @@ export default function AddCustomerWidget() {
               type="text"
               tabIndex={3}
               name="contactName"
+              defaultValue={
+                isCustomerDetailsPanelOpen
+                  ? customerSelected.contacts[0].ContactName
+                  : null
+              }
               placeholder="Contact Name"
             />
             <input
@@ -151,6 +171,11 @@ export default function AddCustomerWidget() {
               type="text"
               tabIndex={3}
               name="contactEmail"
+              defaultValue={
+                isCustomerDetailsPanelOpen
+                  ? customerSelected.contacts[0].ContactEmail
+                  : null
+              }
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
@@ -170,6 +195,13 @@ export default function AddCustomerWidget() {
                     .map((code) =>
                       code.code === "US" ? null : (
                         <option
+                          selected={
+                            isCustomerDetailsPanelOpen
+                              ? customerSelected.contacts[0]
+                                  .ContactPhonePrefix ==
+                                code.dial_code.replace("+", "")
+                              : false
+                          }
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
                         >
@@ -185,6 +217,11 @@ export default function AddCustomerWidget() {
                 type="number"
                 tabIndex={6}
                 name="contactPhone"
+                defaultValue={
+                  isCustomerDetailsPanelOpen
+                    ? customerSelected.contacts[0].ContactPhone
+                    : null
+                }
                 placeholder="1234567890"
               />
             </div>
@@ -199,11 +236,30 @@ export default function AddCustomerWidget() {
             <div>Add Address</div>
             <div className="flex justify-center gap-3 text-xs">
               <div className="flex items-center gap-0.5">
-                <input type="checkbox" name="companyAddressPrimary" id="" />
+                <input
+                  type="checkbox"
+                  defaultChecked={
+                    isCustomerDetailsPanelOpen
+                      ? customerSelected.addresses[0].CompanyAddressPrimary ==
+                        "on"
+                      : false
+                  }
+                  name="companyAddressPrimary"
+                  id=""
+                />
                 <span>Primary</span>
               </div>
               <div className="flex items-center gap-0.5">
-                <input type="checkbox" name="companyAddressHQ" id="" />
+                <input
+                  type="checkbox"
+                  name="companyAddressHQ"
+                  defaultChecked={
+                    isCustomerDetailsPanelOpen
+                      ? customerSelected.addresses[0].CompanyAddressHQ == "on"
+                      : false
+                  }
+                  id=""
+                />
                 <span>HQ</span>
               </div>
             </div>
@@ -216,6 +272,11 @@ export default function AddCustomerWidget() {
               tabIndex={7}
               name="companyStreetAddress"
               placeholder="Street Name"
+              defaultValue={
+                isCustomerDetailsPanelOpen
+                  ? customerSelected.addresses[0].CompanyStreetAddress
+                  : null
+              }
             />
             <input
               required
@@ -223,6 +284,11 @@ export default function AddCustomerWidget() {
               type="text"
               tabIndex={8}
               name="companyCity"
+              defaultValue={
+                isCustomerDetailsPanelOpen
+                  ? customerSelected.addresses[0].CompanyCity
+                  : null
+              }
               placeholder="City"
             />
             <div className="w-full">
@@ -230,6 +296,11 @@ export default function AddCustomerWidget() {
                 required
                 className="p-2 rounded-sm border w-full"
                 type="text"
+                defaultValue={
+                  isCustomerDetailsPanelOpen
+                    ? customerSelected.addresses[0].CompanyZipCode
+                    : null
+                }
                 tabIndex={9}
                 name="companyZipCode"
                 onChange={handleZipCodeChange}
@@ -244,6 +315,11 @@ export default function AddCustomerWidget() {
               tabIndex={10}
               name="companyStateCode"
               placeholder="State – 03"
+              defaultValue={
+                isCustomerDetailsPanelOpen
+                  ? customerSelected.addresses[0].CompanyStateCode
+                  : null
+              }
             />
           </div>
         </div>

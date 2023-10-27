@@ -2,7 +2,11 @@ import { Company } from "..";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { closePanel } from "../app/customer.slice";
+import {
+  closePanel,
+  setCustomerDetailsPanelOpen,
+  setSelectedCustomer,
+} from "../app/customer.slice";
 
 export default function CustomersList() {
   const dispatch = useDispatch();
@@ -11,7 +15,8 @@ export default function CustomersList() {
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
   const [customers, setCustomers] = useState<Company[]>([]);
-  const { isPanelOpen, wasRecordAdded } = useSelector((state: any) => state.customers);
+  const { isPanelOpen, wasRecordAdded, isCustomerDetailsPanelOpen } =
+    useSelector((state: any) => state.customers);
 
   const getCustomers = async function () {
     const request = axios.get(`${apiBaseURL}/api/customers/list`);
@@ -28,14 +33,31 @@ export default function CustomersList() {
     }
   };
 
-  useEffect(function () {
-    getCustomers();
-  }, [wasRecordAdded]);
+  const openCustomerDetails = (customer) => {
+    dispatch(setSelectedCustomer(customer));
+    dispatch(setCustomerDetailsPanelOpen(true));
+  };
+
+  const loadDefaultView = () => {
+    dispatch(setSelectedCustomer(null));
+    dispatch(setCustomerDetailsPanelOpen(false));
+    dispatch(closePanel());
+  };
+
+  useEffect(
+    function () {
+      getCustomers();
+    },
+    [wasRecordAdded]
+  );
 
   return (
     <>
       <table
-        className={"text-sm customer-list h-max " + (isPanelOpen ? "w-max" : "w-full")}
+        className={
+          "text-sm customer-list h-max " +
+          (isPanelOpen || isCustomerDetailsPanelOpen ? "w-max" : "w-full")
+        }
       >
         <thead>
           <tr>
@@ -45,7 +67,7 @@ export default function CustomersList() {
               </div>
             </td>
             <td>Company Name</td>
-            {!isPanelOpen ? (
+            {!isPanelOpen && !isCustomerDetailsPanelOpen ? (
               <>
                 <td>No. of Employees</td>
                 <td>Contact Name</td>
@@ -58,14 +80,14 @@ export default function CustomersList() {
         </thead>
         <tbody className="text-[#666]">
           {customers.map((customer) => (
-            <tr key={customer.CompanyID} onClick={console.log}>
+            <tr key={customer.CompanyID}>
               <td>
                 <div className="dead-center">
                   <input type="checkbox" />
                 </div>
               </td>
               <td>{customer.CompanyName}</td>
-              {!isPanelOpen ? (
+              {!isPanelOpen && !isCustomerDetailsPanelOpen ? (
                 <>
                   <td>
                     {customer.CompanyEmployeeCount}{" "}
@@ -76,23 +98,52 @@ export default function CustomersList() {
                       customer?.contacts[0].ContactName}
                   </td>
                   <td>
-                    {"+"}
-                    {customer?.contacts?.length > 0 &&
-                      customer?.contacts[0].ContactPhonePrefix}{" "}
-                    {customer?.contacts?.length > 0 &&
-                      customer?.contacts[0].ContactPhone}
+                    <div className="flex justify-between">
+                      <span>
+                        {"+"}
+                        {customer?.contacts?.length > 0 &&
+                          customer?.contacts[0].ContactPhonePrefix}{" "}
+                        {customer?.contacts?.length > 0 &&
+                          customer?.contacts[0].ContactPhone}
+                      </span>
+                      <div className="flex items-end">
+                        <button
+                          onClick={() => openCustomerDetails(customer)}
+                          className="cursor-pointer border-b border-dotted border-[#888]"
+                        >
+                          More
+                        </button>
+                      </div>
+                    </div>
                   </td>
                   <td>
-                    {customer?.addresses?.length > 0 &&
-                      customer?.addresses[0].CompanyStreetAddress}
+                    <div className="flex justify-between">
+                      <span>
+                        {customer?.addresses?.length > 0 &&
+                          customer?.addresses[0].CompanyStreetAddress}
+                      </span>
+                      <div className="flex items-end">
+                        <button
+                          onClick={() => openCustomerDetails(customer)}
+                          className="cursor-pointer border-b border-dotted border-[#888]"
+                        >
+                          More
+                        </button>
+                      </div>
+                    </div>
                   </td>
                   <td>
-                    <button className="bg-gray-700 text-gray-200 p-0.5 px-1 rounded text-xs">Active</button>
+                    <button className="bg-gray-700 text-gray-200 p-0.5 px-1 rounded text-xs">
+                      Active
+                    </button>
                   </td>
                 </>
               ) : (
                 <td>
-                  <button onClick={() => dispatch(closePanel())} className="cusor-pointer border-b border-dotted border-[#aaa]">
+                  <button
+                    onClick={() => loadDefaultView()}
+                    className="cusor-pointer border-b border-dotted border-[#aaa]"
+                  >
                     More
                   </button>
                 </td>

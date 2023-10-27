@@ -22,4 +22,11 @@
     display: grid;
     place-items: center;
   }
+
+  table.customer-list tr td:nth-last-child(1) {
+    display: grid;
+    border-width: 0px;
+    place-items: center;
+    border-top-width: 1px;
+  }
 }
