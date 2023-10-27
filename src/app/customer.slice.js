@@ -17,6 +17,8 @@ export const customerSlice = createSlice({
     },
 
     closePanel: (state) => {
+      state.customerSelected = null;
+      state.isCustomerDetailsPanelOpen = false;
       state.isPanelOpen = false;
       return state;
     },

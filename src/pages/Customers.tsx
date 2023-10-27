@@ -6,6 +6,7 @@ import CustomersList from "../components/CustomersList";
 import AddCustomerWidget from "../components/AddCustomerWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { openPanel } from "../app/customer.slice";
+import ContactsList from "../components/ContactsList";
 
 export default function Customers() {
   const dispatch = useDispatch();
@@ -39,14 +40,15 @@ export default function Customers() {
           <div
             className={
               isPanelOpen || isCustomerDetailsPanelOpen
-                ? "grid gap-4 grid-rows-1 " + (isCustomerDetailsPanelOpen
-                  ? "grid-cols-[auto_1fr_1fr]"
-                  : "grid-cols-[auto_1fr]")
+                ? "grid gap-4 grid-rows-1 " +
+                  (isCustomerDetailsPanelOpen
+                    ? "grid-cols-[auto_1fr_1fr]"
+                    : "grid-cols-[auto_1fr]")
                 : ""
             }
           >
             <CustomersList />
-            {isCustomerDetailsPanelOpen && "Customer DEta"}
+            {isCustomerDetailsPanelOpen && <ContactsList />}
             {(isPanelOpen || isCustomerDetailsPanelOpen) && (
               <AddCustomerWidget />
             )}

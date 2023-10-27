@@ -73,7 +73,7 @@ export default function CustomersList() {
                 <td>Contact Name</td>
                 <td>Phone nos.</td>
                 <td>Addresses</td>
-                <td>Status</td>
+                <td className="no-b-top">Status</td>
               </>
             ) : null}
           </tr>

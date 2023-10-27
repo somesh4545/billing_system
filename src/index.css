@@ -23,7 +23,8 @@
     place-items: center;
   }
 
-  table.customer-list tr td:nth-last-child(1) {
+  table.customer-list tr td.no-b-top,
+  table.customer-list tbody tr td:nth-last-child(1) {
     display: grid;
     border-width: 0px;
     place-items: center;
