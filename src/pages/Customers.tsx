@@ -4,16 +4,20 @@ import CustomersBillingStatusWidget from "../components/CustomersBillingStatusWi
 import CustomersListHeadings from "../components/CustomersListHeadings";
 import CustomersList from "../components/CustomersList";
 import AddCustomerWidget from "../components/AddCustomerWidget";
+import { useDispatch, useSelector } from "react-redux";
+import { openPanel } from "../app/customer.slice";
 
 export default function Customers() {
-  const [openPanel, setOpenPanel] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isPanelOpen } = useSelector((state: any) => state.customers);
 
   return (
     <div className="p-4">
       <div className="flex justify-between py-4">
         <span>Customers Summary</span>
         <button
-          onClick={() => setOpenPanel(true)}
+          onClick={() => dispatch(openPanel())}
           className="bg-blue-600 py-2 px-4 rounded text-white"
         >
           + Add New Customer
@@ -28,9 +32,13 @@ export default function Customers() {
 
         <div className="bg-white rounded-xl p-4 grid gap-8 w-full">
           <CustomersListHeadings />
-          <div className={openPanel ? "grid grid-cols-[auto_1fr] gap-4 grid-rows-1" : ""}>
-            <CustomersList openPanel={openPanel} closePanel={() => setOpenPanel(false)} />
-            {openPanel && <AddCustomerWidget closePanel={() => setOpenPanel(false)} />}
+          <div
+            className={
+              isPanelOpen ? "grid grid-cols-[auto_1fr] gap-4 grid-rows-1" : ""
+            }
+          >
+            <CustomersList />
+            {isPanelOpen && <AddCustomerWidget />}
           </div>
         </div>
       </div>

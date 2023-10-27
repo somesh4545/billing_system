@@ -1,11 +1,55 @@
 import React, { useRef } from "react";
 import dialcodes from "../assets/dialcodes.json";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { closePanel, updateWasRecordAdded } from "../app/customer.slice";
 
-export default function AddCustomerWidget({ closePanel }: { closePanel: any }) {
+export default function AddCustomerWidget() {
+  const dispatch = useDispatch();
+
   const form = useRef<HTMLFormElement>(null);
+  const zipCodeError = useRef<HTMLParagraphElement>(null);
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
+
+  const handleZipCodeChange = (e: any) => {
+    const inputValue = e.target.value;
+    const element = zipCodeError.current as HTMLParagraphElement;
+
+    // Is numberic
+    if (
+      /\d/gm.test(inputValue) &&
+      (/-/gm.test(inputValue) || !/\D/.test(inputValue))
+    ) {
+      if (/-/gm.test(inputValue)) {
+        inputValue.length != 10
+          ? (element.innerHTML =
+              "<div class='pt-1'>The ZIP code must be in the format 00000-0000.</div>")
+          : (element.innerHTML = "");
+
+        return;
+      }
+
+      inputValue.length != 5
+        ? (element.innerHTML =
+            "<div class='pt-1'>The ZIP code must be in the format 00000.</div>")
+        : (element.innerHTML = "");
+
+      return;
+    }
+
+    // Input is alphanumeric
+    if (/\w/gm.test(inputValue)) {
+      inputValue.length != 10
+        ? (element.innerHTML =
+            "<div class='pt-1'>The ZIP code must be alphanumeric and consist of exactly 10 characters.</div>")
+        : (element.innerHTML = "");
+
+      return;
+    }
+
+    element.innerHTML = "";
+  };
 
   const createCustomer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,11 +87,13 @@ export default function AddCustomerWidget({ closePanel }: { closePanel: any }) {
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
-        closePanel();
+        console.log(response.data?.CompanyID);
+        dispatch(updateWasRecordAdded(response.data?.CompanyID));
+        dispatch(closePanel());
       })
       .catch(function (response) {
         //handle error
-        closePanel();
+        dispatch(closePanel());
         console.log(response);
       });
   };
@@ -114,20 +160,23 @@ export default function AddCustomerWidget({ closePanel }: { closePanel: any }) {
                   name="contactPhonePrefix"
                   className="font-mono w-full p-2.5 cursor-pointer"
                 >
+                  <option value={"1"}>US(+1)</option>
                   {dialcodes
                     .sort((a, b) => {
                       if (a.code < b.code) return -1;
                       if (a.code > b.code) return 1;
                       return 0;
                     })
-                    .map((code) => (
-                      <option
-                        key={code.code}
-                        value={code.dial_code.replace("+", "")}
-                      >
-                        {code.code}({code.dial_code})
-                      </option>
-                    ))}
+                    .map((code) =>
+                      code.code === "US" ? null : (
+                        <option
+                          key={code.code}
+                          value={code.dial_code.replace("+", "")}
+                        >
+                          {code.code}({code.dial_code})
+                        </option>
+                      )
+                    )}
                 </select>
               </div>
               <input
@@ -150,11 +199,7 @@ export default function AddCustomerWidget({ closePanel }: { closePanel: any }) {
             <div>Add Address</div>
             <div className="flex justify-center gap-3 text-xs">
               <div className="flex items-center gap-0.5">
-                <input
-                  type="checkbox"
-                  name="companyAddressPrimary"
-                  id=""
-                />
+                <input type="checkbox" name="companyAddressPrimary" id="" />
                 <span>Primary</span>
               </div>
               <div className="flex items-center gap-0.5">
@@ -180,14 +225,18 @@ export default function AddCustomerWidget({ closePanel }: { closePanel: any }) {
               name="companyCity"
               placeholder="City"
             />
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="text"
-              tabIndex={9}
-              name="companyZipCode"
-              placeholder="ZIP Code"
-            />
+            <div className="w-full">
+              <input
+                required
+                className="p-2 rounded-sm border w-full"
+                type="text"
+                tabIndex={9}
+                name="companyZipCode"
+                onChange={handleZipCodeChange}
+                placeholder="ZIP Code"
+              />
+              <p className="text-xs text-rose-800" ref={zipCodeError}></p>
+            </div>
             <input
               required
               className="p-2 rounded-sm border"
@@ -204,7 +253,7 @@ export default function AddCustomerWidget({ closePanel }: { closePanel: any }) {
             className="bg-rose-100 py-2 px-4 rounded cursor-pointer hover:bg-rose-200"
             onClick={(e) => {
               e.preventDefault();
-              closePanel();
+              dispatch(closePanel());
             }}
           >
             Cancel

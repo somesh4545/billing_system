@@ -1,18 +1,17 @@
 import { Company } from "..";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { closePanel } from "../app/customer.slice";
 
-export default function CustomersList({
-  openPanel,
-  closePanel,
-}: {
-  openPanel: boolean;
-  closePanel: any;
-}) {
+export default function CustomersList() {
+  const dispatch = useDispatch();
+
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
   const [customers, setCustomers] = useState<Company[]>([]);
+  const { isPanelOpen, wasRecordAdded } = useSelector((state: any) => state.customers);
 
   const getCustomers = async function () {
     const request = axios.get(`${apiBaseURL}/api/customers/list`);
@@ -31,12 +30,12 @@ export default function CustomersList({
 
   useEffect(function () {
     getCustomers();
-  }, [openPanel]);
+  }, [wasRecordAdded]);
 
   return (
     <>
       <table
-        className={"text-sm customer-list h-max " + (openPanel ? "w-max" : "w-full")}
+        className={"text-sm customer-list h-max " + (isPanelOpen ? "w-max" : "w-full")}
       >
         <thead>
           <tr>
@@ -46,7 +45,7 @@ export default function CustomersList({
               </div>
             </td>
             <td>Company Name</td>
-            {!openPanel ? (
+            {!isPanelOpen ? (
               <>
                 <td>No. of Employees</td>
                 <td>Contact Name</td>
@@ -59,14 +58,14 @@ export default function CustomersList({
         </thead>
         <tbody className="text-[#666]">
           {customers.map((customer) => (
-            <tr key={customer.CompanyID}>
+            <tr key={customer.CompanyID} onClick={console.log}>
               <td>
                 <div className="dead-center">
                   <input type="checkbox" />
                 </div>
               </td>
               <td>{customer.CompanyName}</td>
-              {!openPanel ? (
+              {!isPanelOpen ? (
                 <>
                   <td>
                     {customer.CompanyEmployeeCount}{" "}
@@ -88,12 +87,12 @@ export default function CustomersList({
                       customer?.addresses[0].CompanyStreetAddress}
                   </td>
                   <td>
-                    <button>Active</button>
+                    <button className="bg-gray-700 text-gray-200 p-0.5 px-1 rounded text-xs">Active</button>
                   </td>
                 </>
               ) : (
                 <td>
-                  <button onClick={closePanel} className="cusor-pointer border-b border-dotted border-[#aaa]">
+                  <button onClick={() => dispatch(closePanel())} className="cusor-pointer border-b border-dotted border-[#aaa]">
                     More
                   </button>
                 </td>
