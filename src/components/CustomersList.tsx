@@ -51,15 +51,59 @@ export default function CustomersList() {
     dispatch(closePanel());
   };
 
-  const filterCustomers = (customers: Company[], searchExpression): Company[] => {
-    return customers.filter(company => {
-      if (company.CompanyName.toLowerCase().search(searchExpression) > -1) {
+  const searchMacro = (term: string | number, search) => {
+    if (term == null) return false;
+
+    return term.toString().toLowerCase().search(search) > -1;
+  };
+
+  const filterCustomers = (
+    customers: Company[],
+    searchExpression
+  ): Company[] => {
+    return customers.filter((company) => {
+      if (searchMacro(company.CompanyName, searchExpression)) {
         return true;
       }
 
+      if (company.contacts.length > 0) {
+        if (searchMacro(company.contacts[0].ContactEmail, searchExpression)) {
+          return true;
+        }
+
+        if (searchMacro(company.contacts[0].ContactName, searchExpression)) {
+          return true;
+        }
+
+        if (searchMacro(company.contacts[0].ContactPhone, searchExpression)) {
+          return true;
+        }
+      }
+
+      if (company.addresses.length > 0) {
+        if (searchMacro(company.addresses[0].CompanyCity, searchExpression)) {
+          return true;
+        }
+
+        if (
+          searchMacro(
+            company.addresses[0].CompanyStreetAddress,
+            searchExpression
+          )
+        ) {
+          return true;
+        }
+
+        if (
+          searchMacro(company.addresses[0].CompanyZipCode, searchExpression)
+        ) {
+          return true;
+        }
+      }
+
       return false;
-    })
-  }
+    });
+  };
 
   useEffect(
     function () {
@@ -77,7 +121,7 @@ export default function CustomersList() {
 
       const searchExpression = new RegExp(searchValue.toLowerCase(), "gm");
 
-      setCustomers(filterCustomers(loadedCustomers, searchExpression))
+      setCustomers(filterCustomers(loadedCustomers, searchExpression));
     },
     [searchValue]
   );
