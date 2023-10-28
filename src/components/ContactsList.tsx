@@ -53,7 +53,7 @@ export default function ContactsList() {
 
           <div className="flex justify-end h-max">
             <button onClick={addContact} className="bg-blue-200 p-2 rounded">
-              Add Contact
+              +
             </button>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function ContactsList() {
 
           <div className="flex justify-end h-max">
             <button onClick={addAddress} className="bg-blue-200 p-2 rounded">
-              Add Address
+              +
             </button>
           </div>
         </div>
