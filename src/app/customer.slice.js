@@ -8,6 +8,7 @@ export const customerSlice = createSlice({
     wasRecordAdded: null,
     customerSelected: null,
     addingAnotherContact: false,
+    addingAnotherAddress: false,
     customerSelectedIndex: null,
     isCustomerDetailsPanelOpen: false,
     loadedCustomers: [],
@@ -60,6 +61,11 @@ export const customerSlice = createSlice({
       return state;
     },
 
+    setAddingAnotherAddress: (state, { payload }) => {
+      state.addingAnotherAddress = payload;
+      return state;
+    },
+
     setCustomerSelectedIndex: (state, { payload }) => {
       state.customerSelectedIndex = payload;
       return state;
@@ -79,6 +85,7 @@ export const {
   setAddingAnotherContact,
   finishedAddingContactOrAddress,
   setCustomerSelectedIndex,
+  setAddingAnotherAddress
 } = customerSlice.actions;
 
 export default customerSlice.reducer;

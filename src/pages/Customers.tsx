@@ -5,17 +5,30 @@ import CustomersListHeadings from "../components/CustomersListHeadings";
 import CustomersList from "../components/CustomersList";
 import AddCustomerWidget from "../components/AddCustomerWidget";
 import { useDispatch, useSelector } from "react-redux";
-import { openPanel } from "../app/customer.slice";
+import {
+  openPanel,
+  setAddingAnotherAddress,
+  setAddingAnotherContact,
+} from "../app/customer.slice";
 import ContactsList from "../components/ContactsList";
 import UpdateCustomer from "../components/UpdateCustomerWidget";
 import AddContact from "../components/AddContactWidget";
+import AddAddress from "../components/AddAddressWidget";
 
 export default function Customers() {
   const dispatch = useDispatch();
 
-  const { isPanelOpen, isCustomerDetailsPanelOpen, addingAnotherContact } = useSelector(
-    (state: any) => state.customers
-  );
+  const {
+    isPanelOpen,
+    isCustomerDetailsPanelOpen,
+    addingAnotherContact,
+    addingAnotherAddress,
+  } = useSelector((state: any) => state.customers);
+
+  const reset = () => {
+    dispatch(setAddingAnotherContact(false));
+    dispatch(setAddingAnotherAddress(false));
+  };
 
   return (
     <div className="p-4">
@@ -54,8 +67,25 @@ export default function Customers() {
             {isPanelOpen && !isCustomerDetailsPanelOpen && (
               <AddCustomerWidget />
             )}
-            {(isCustomerDetailsPanelOpen && !addingAnotherContact) && <UpdateCustomer />}
-            {addingAnotherContact && <AddContact />}
+            {isCustomerDetailsPanelOpen &&
+              !addingAnotherContact &&
+              !addingAnotherAddress && <UpdateCustomer />}
+            {addingAnotherContact && !addingAnotherAddress && <AddContact />}
+            {!addingAnotherContact && addingAnotherAddress && <AddAddress />}
+            {addingAnotherContact && addingAnotherAddress && (
+              <div>
+                <p>
+                  You cannot add contact and address yet. This feature is under
+                  development.
+                </p>
+                <button
+                  className="w-full mt-2 p-2 bg-indigo-200 rounded hover:bg-indigo-300"
+                  onClick={reset}
+                >
+                  Reset.
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

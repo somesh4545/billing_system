@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddingAnotherContact } from "../app/customer.slice";
+import {
+  setAddingAnotherAddress,
+  setAddingAnotherContact,
+} from "../app/customer.slice";
 
 export default function ContactsList() {
   const dispatch = useDispatch();
@@ -8,6 +11,10 @@ export default function ContactsList() {
 
   function addContact() {
     dispatch(setAddingAnotherContact(true));
+  }
+
+  function addAddress() {
+    dispatch(setAddingAnotherAddress(true));
   }
 
   return (
@@ -56,19 +63,29 @@ export default function ContactsList() {
         <legend>
           <div className="px-2">List of Addresses</div>
         </legend>
-        <div className="bg-white rounded p-3 px-4 h-full shadow-sm">
-          {customerSelected.addresses.map((address, _) => (
-            <details key={`${address.ContactID}_${address.CompanyStreetAddress}`}>
-              <summary>{address.CompanyStreetAddress}</summary>
+        <div className="bg-white rounded pt-3 p-4 max-h-[273.5px] h-full shadow-sm grid grid-rows-[1fr_auto]">
+          <div className="h-full">
+            {customerSelected.addresses.map((address, _) => (
+              <details
+                key={`${address.ContactID}_${address.CompanyStreetAddress}`}
+              >
+                <summary>{address.CompanyStreetAddress}</summary>
 
-              <div className="grid pt-2">
-                <div className="flex justify-between pt-1">
-                  <span className="text-[#888]">Street Name</span>
-                  <span>{address.CompanyStreetAddress}</span>
+                <div className="grid pt-2">
+                  <div className="flex justify-between pt-1">
+                    <span className="text-[#888]">Street Name</span>
+                    <span>{address.CompanyStreetAddress}</span>
+                  </div>
                 </div>
-              </div>
-            </details>
-          ))}
+              </details>
+            ))}
+          </div>
+
+          <div className="flex justify-end h-max">
+            <button onClick={addAddress} className="bg-blue-200 p-2 rounded">
+              Add Address
+            </button>
+          </div>
         </div>
       </fieldset>
     </div>
