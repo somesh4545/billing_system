@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   closePanel,
   setCustomerDetailsPanelOpen,
+  setCustomerSelectedIndex,
   setLoadedCustomers,
   setSelectedCustomer,
 } from "../app/customer.slice";
@@ -21,6 +22,7 @@ export default function CustomersList() {
     wasRecordAdded,
     isCustomerDetailsPanelOpen,
     searchValue,
+    customerSelectedIndex,
     loadedCustomers,
   } = useSelector((state: any) => state.customers);
 
@@ -37,10 +39,13 @@ export default function CustomersList() {
 
       setCustomers(companies);
       dispatch(setLoadedCustomers(companies));
+
+      dispatch(setSelectedCustomer(companies[customerSelectedIndex]));
     }
   };
 
-  const openCustomerDetails = (customer) => {
+  const openCustomerDetails = (customer, _) => {
+    dispatch(setCustomerSelectedIndex(_));
     dispatch(setSelectedCustomer(customer));
     dispatch(setCustomerDetailsPanelOpen(true));
   };
@@ -154,14 +159,14 @@ export default function CustomersList() {
           </tr>
         </thead>
         <tbody className="text-[#666]">
-          {customers.map((customer) => (
+          {customers.map((customer, _) => (
             <tr
               className="cursor-pointer"
               key={customer.CompanyID}
               onClick={(e) => {
                 // @ts-ignore
                 if (!e.target.classList.contains("preventDefault")) {
-                  openCustomerDetails(customer);
+                  openCustomerDetails(customer, _);
                 }
               }}
             >
@@ -192,7 +197,7 @@ export default function CustomersList() {
                       </span>
                       <div className="flex items-end">
                         <button
-                          onClick={() => openCustomerDetails(customer)}
+                          onClick={() => openCustomerDetails(customer, _)}
                           className="cursor-pointer border-b border-dotted border-[#888]"
                         >
                           More
@@ -208,7 +213,7 @@ export default function CustomersList() {
                       </span>
                       <div className="flex items-end">
                         <button
-                          onClick={() => openCustomerDetails(customer)}
+                          onClick={() => openCustomerDetails(customer, _)}
                           className="cursor-pointer border-b border-dotted border-[#888]"
                         >
                           More

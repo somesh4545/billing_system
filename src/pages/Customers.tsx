@@ -8,11 +8,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { openPanel } from "../app/customer.slice";
 import ContactsList from "../components/ContactsList";
 import UpdateCustomer from "../components/UpdateCustomerWidget";
+import AddContact from "../components/AddContactWidget";
 
 export default function Customers() {
   const dispatch = useDispatch();
 
-  const { isPanelOpen, isCustomerDetailsPanelOpen } = useSelector(
+  const { isPanelOpen, isCustomerDetailsPanelOpen, addingAnotherContact } = useSelector(
     (state: any) => state.customers
   );
 
@@ -53,7 +54,8 @@ export default function Customers() {
             {isPanelOpen && !isCustomerDetailsPanelOpen && (
               <AddCustomerWidget />
             )}
-            {isCustomerDetailsPanelOpen && <UpdateCustomer />}
+            {(isCustomerDetailsPanelOpen && !addingAnotherContact) && <UpdateCustomer />}
+            {addingAnotherContact && <AddContact />}
           </div>
         </div>
       </div>

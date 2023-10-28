@@ -2,13 +2,11 @@ import React, { useRef } from "react";
 import dialcodes from "../assets/dialcodes.json";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { closePanel, updateWasRecordAdded } from "../app/customer.slice";
+import { closePanel, finishedAddingContactOrAddress, updateWasRecordAdded } from "../app/customer.slice";
 
-export default function UpdateCustomer() {
+export default function AddContact() {
   const dispatch = useDispatch();
-  const { customerSelected } = useSelector(
-    (state: any) => state.customers
-  );
+  const { customerSelected } = useSelector((state: any) => state.customers);
 
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
@@ -60,27 +58,7 @@ export default function UpdateCustomer() {
     const formData = new FormData();
 
     formData.append("companyID", customerSelected.CompanyID);
-    formData.append("addressID", customerSelected.addresses[0].AddressID);
-    formData.append("contactID", customerSelected.contacts[0].ContactID);
 
-
-    formData.append("companyName", form.current?.companyName.value);
-    formData.append(
-      "companyEmployeeCount",
-      form.current?.companyEmployeeCount.value
-    );
-    formData.append(
-      "companyStreetAddress",
-      form.current?.companyStreetAddress.value
-    );
-    formData.append("companyCity", form.current?.companyCity.value);
-    formData.append("companyStateCode", form.current?.companyStateCode.value);
-    formData.append("companyZipCode", form.current?.companyZipCode.value);
-    formData.append(
-      "companyAddressPrimary",
-      form.current?.companyAddressPrimary.value
-    );
-    formData.append("companyAddressHQ", form.current?.companyAddressHQ.value);
     formData.append("contactName", form.current?.contactName.value);
     formData.append("contactEmail", form.current?.contactEmail.value);
     formData.append(
@@ -92,16 +70,16 @@ export default function UpdateCustomer() {
     axios({
       method: "POST",
       data: formData,
-      url: `${apiBaseURL}/api/customers/update`,
+      url: `${apiBaseURL}/api/customers/addContact`,
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
         dispatch(updateWasRecordAdded(response.data));
-        dispatch(closePanel());
-        
+        dispatch(finishedAddingContactOrAddress());
       })
       .catch(function (response) {
         //handle error
+        dispatch(finishedAddingContactOrAddress());
         dispatch(closePanel());
         console.log(response);
       });
@@ -109,7 +87,7 @@ export default function UpdateCustomer() {
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
-      <h2>Update Customer Details</h2>
+      <h2>Add Another Details</h2>
 
       <form
         ref={form}
@@ -128,6 +106,7 @@ export default function UpdateCustomer() {
               type="text"
               defaultValue={customerSelected.CompanyName}
               tabIndex={1}
+              disabled
               name="companyName"
               placeholder="Name"
             />
@@ -135,6 +114,7 @@ export default function UpdateCustomer() {
               required
               className="p-2 rounded-sm border"
               type="number"
+              disabled
               tabIndex={2}
               defaultValue={customerSelected.CompanyEmployeeCount}
               name="companyEmployeeCount"
@@ -154,7 +134,6 @@ export default function UpdateCustomer() {
               type="text"
               tabIndex={3}
               name="contactName"
-              defaultValue={customerSelected.contacts[0].ContactName}
               placeholder="Contact Name"
             />
             <input
@@ -163,7 +142,6 @@ export default function UpdateCustomer() {
               type="text"
               tabIndex={3}
               name="contactEmail"
-              defaultValue={customerSelected.contacts[0].ContactEmail}
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
@@ -183,9 +161,6 @@ export default function UpdateCustomer() {
                     .map((code) =>
                       code.code === "US" ? null : (
                         <option
-                          defaultValue={
-                            customerSelected.contacts[0].ContactPhonePrefix
-                          }
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
                         >
@@ -201,7 +176,6 @@ export default function UpdateCustomer() {
                 type="number"
                 tabIndex={6}
                 name="contactPhone"
-                defaultValue={customerSelected.contacts[0].ContactPhone}
                 placeholder="1234567890"
               />
             </div>
@@ -218,6 +192,7 @@ export default function UpdateCustomer() {
               <div className="flex items-center gap-0.5">
                 <input
                   type="checkbox"
+                  disabled
                   defaultChecked={
                     customerSelected.addresses[0].CompanyAddressPrimary == "on"
                   }
@@ -244,6 +219,7 @@ export default function UpdateCustomer() {
               required
               className="p-2 rounded-sm border"
               type="text"
+              disabled
               tabIndex={7}
               name="companyStreetAddress"
               placeholder="Street Name"
@@ -254,6 +230,7 @@ export default function UpdateCustomer() {
               className="p-2 rounded-sm border"
               type="text"
               tabIndex={8}
+              disabled
               name="companyCity"
               defaultValue={customerSelected.addresses[0].CompanyCity}
               placeholder="City"
@@ -265,6 +242,7 @@ export default function UpdateCustomer() {
                 type="text"
                 defaultValue={customerSelected.addresses[0].CompanyZipCode}
                 tabIndex={9}
+                disabled
                 name="companyZipCode"
                 onChange={handleZipCodeChange}
                 placeholder="ZIP Code"
@@ -276,6 +254,7 @@ export default function UpdateCustomer() {
               className="p-2 rounded-sm border"
               type="text"
               tabIndex={10}
+              disabled
               name="companyStateCode"
               placeholder="State – 03"
               defaultValue={customerSelected.addresses[0].CompanyStateCode}

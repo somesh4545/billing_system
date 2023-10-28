@@ -7,8 +7,10 @@ export const customerSlice = createSlice({
     isPanelOpen: false,
     wasRecordAdded: null,
     customerSelected: null,
+    addingAnotherContact: false,
+    customerSelectedIndex: null,
     isCustomerDetailsPanelOpen: false,
-    loadedCustomers: []
+    loadedCustomers: [],
   },
   reducers: {
     openPanel: (state) => {
@@ -23,6 +25,10 @@ export const customerSlice = createSlice({
       state.isCustomerDetailsPanelOpen = false;
       state.isPanelOpen = false;
       return state;
+    },
+
+    finishedAddingContactOrAddress: (state) => {
+      state.addingAnotherContact = false;
     },
 
     updateWasRecordAdded: (state, { payload }) => {
@@ -47,7 +53,17 @@ export const customerSlice = createSlice({
     setLoadedCustomers: (state, { payload }) => {
       state.loadedCustomers = payload;
       return state;
-    }
+    },
+
+    setAddingAnotherContact: (state, { payload }) => {
+      state.addingAnotherContact = payload;
+      return state;
+    },
+
+    setCustomerSelectedIndex: (state, { payload }) => {
+      state.customerSelectedIndex = payload;
+      return state;
+    },
   },
 });
 
@@ -59,7 +75,10 @@ export const {
   setSelectedCustomer,
   updateWasRecordAdded,
   setCustomerDetailsPanelOpen,
-  setLoadedCustomers
+  setLoadedCustomers,
+  setAddingAnotherContact,
+  finishedAddingContactOrAddress,
+  setCustomerSelectedIndex,
 } = customerSlice.actions;
 
 export default customerSlice.reducer;
