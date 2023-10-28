@@ -155,7 +155,16 @@ export default function CustomersList() {
         </thead>
         <tbody className="text-[#666]">
           {customers.map((customer) => (
-            <tr key={customer.CompanyID}>
+            <tr
+              className="cursor-pointer"
+              key={customer.CompanyID}
+              onClick={(e) => {
+                // @ts-ignore
+                if (!e.target.classList.contains("preventDefault")) {
+                  openCustomerDetails(customer);
+                }
+              }}
+            >
               <td>
                 <div className="dead-center">
                   <input type="checkbox" />
@@ -217,7 +226,7 @@ export default function CustomersList() {
                 <td>
                   <button
                     onClick={() => loadDefaultView()}
-                    className="cusor-pointer border-b border-dotted border-[#aaa]"
+                    className="cusor-pointer border-b border-dotted border-[#aaa] preventDefault"
                   >
                     More
                   </button>

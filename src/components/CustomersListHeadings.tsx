@@ -38,6 +38,12 @@ export default function CustomersListHeadings() {
             className="border p-2.5 rounded pl-7"
           />
         </div>
+
+        {/* <div className="absolute top-0 left-0 right-0 bottom-0 w-screen h-screen bg-[#00000050] grid place-items-center">
+          <div className="bg-white w-full max-w-xs p-4 rounded">
+            <h2 className="text-md">Filters</h2>
+          </div>
+        </div> */}
       </div>
     </div>
   );

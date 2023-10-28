@@ -7,6 +7,7 @@ import AddCustomerWidget from "../components/AddCustomerWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { openPanel } from "../app/customer.slice";
 import ContactsList from "../components/ContactsList";
+import UpdateCustomer from "../components/UpdateCustomerWidget";
 
 export default function Customers() {
   const dispatch = useDispatch();
@@ -49,9 +50,10 @@ export default function Customers() {
           >
             <CustomersList />
             {isCustomerDetailsPanelOpen && <ContactsList />}
-            {(isPanelOpen || isCustomerDetailsPanelOpen) && (
+            {isPanelOpen && !isCustomerDetailsPanelOpen && (
               <AddCustomerWidget />
             )}
+            {isCustomerDetailsPanelOpen && <UpdateCustomer />}
           </div>
         </div>
       </div>

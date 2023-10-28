@@ -4,9 +4,9 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { closePanel, updateWasRecordAdded } from "../app/customer.slice";
 
-export default function AddCustomerWidget() {
+export default function UpdateCustomer() {
   const dispatch = useDispatch();
-  const { isCustomerDetailsPanelOpen, customerSelected } = useSelector(
+  const { customerSelected } = useSelector(
     (state: any) => state.customers
   );
 
@@ -59,6 +59,11 @@ export default function AddCustomerWidget() {
 
     const formData = new FormData();
 
+    formData.append("companyID", customerSelected.CompanyID);
+    formData.append("addressID", customerSelected.addresses[0].AddressID);
+    formData.append("contactID", customerSelected.contacts[0].ContactID);
+
+
     formData.append("companyName", form.current?.companyName.value);
     formData.append(
       "companyEmployeeCount",
@@ -87,12 +92,11 @@ export default function AddCustomerWidget() {
     axios({
       method: "POST",
       data: formData,
-      url: `${apiBaseURL}/api/customers/create`,
+      url: `${apiBaseURL}/api/customers/update`,
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
-        console.log(response.data?.CompanyID);
-        dispatch(updateWasRecordAdded(response.data?.CompanyID));
+        dispatch(updateWasRecordAdded(response.data));
         dispatch(closePanel());
       })
       .catch(function (response) {
@@ -104,7 +108,7 @@ export default function AddCustomerWidget() {
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
-      <h2>Add new Customer Details</h2>
+      <h2>Update Customer Details</h2>
 
       <form
         ref={form}
@@ -121,6 +125,7 @@ export default function AddCustomerWidget() {
               required
               className="p-2 rounded-sm border"
               type="text"
+              defaultValue={customerSelected.CompanyName}
               tabIndex={1}
               name="companyName"
               placeholder="Name"
@@ -130,6 +135,7 @@ export default function AddCustomerWidget() {
               className="p-2 rounded-sm border"
               type="number"
               tabIndex={2}
+              defaultValue={customerSelected.CompanyEmployeeCount}
               name="companyEmployeeCount"
               placeholder="No of Employees"
             />
@@ -147,6 +153,7 @@ export default function AddCustomerWidget() {
               type="text"
               tabIndex={3}
               name="contactName"
+              defaultValue={customerSelected.contacts[0].ContactName}
               placeholder="Contact Name"
             />
             <input
@@ -155,6 +162,7 @@ export default function AddCustomerWidget() {
               type="text"
               tabIndex={3}
               name="contactEmail"
+              defaultValue={customerSelected.contacts[0].ContactEmail}
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
@@ -174,6 +182,10 @@ export default function AddCustomerWidget() {
                     .map((code) =>
                       code.code === "US" ? null : (
                         <option
+                          selected={
+                            customerSelected.contacts[0].ContactPhonePrefix ==
+                            code.dial_code.replace("+", "")
+                          }
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
                         >
@@ -189,6 +201,7 @@ export default function AddCustomerWidget() {
                 type="number"
                 tabIndex={6}
                 name="contactPhone"
+                defaultValue={customerSelected.contacts[0].ContactPhone}
                 placeholder="1234567890"
               />
             </div>
@@ -203,11 +216,25 @@ export default function AddCustomerWidget() {
             <div>Add Address</div>
             <div className="flex justify-center gap-3 text-xs">
               <div className="flex items-center gap-0.5">
-                <input type="checkbox" name="companyAddressPrimary" id="" />
+                <input
+                  type="checkbox"
+                  defaultChecked={
+                    customerSelected.addresses[0].CompanyAddressPrimary == "on"
+                  }
+                  name="companyAddressPrimary"
+                  id=""
+                />
                 <span>Primary</span>
               </div>
               <div className="flex items-center gap-0.5">
-                <input type="checkbox" name="companyAddressHQ" id="" />
+                <input
+                  type="checkbox"
+                  name="companyAddressHQ"
+                  defaultChecked={
+                    customerSelected.addresses[0].CompanyAddressHQ == "on"
+                  }
+                  id=""
+                />
                 <span>HQ</span>
               </div>
             </div>
@@ -220,6 +247,7 @@ export default function AddCustomerWidget() {
               tabIndex={7}
               name="companyStreetAddress"
               placeholder="Street Name"
+              defaultValue={customerSelected.addresses[0].CompanyStreetAddress}
             />
             <input
               required
@@ -227,6 +255,7 @@ export default function AddCustomerWidget() {
               type="text"
               tabIndex={8}
               name="companyCity"
+              defaultValue={customerSelected.addresses[0].CompanyCity}
               placeholder="City"
             />
             <div className="w-full">
@@ -234,6 +263,7 @@ export default function AddCustomerWidget() {
                 required
                 className="p-2 rounded-sm border w-full"
                 type="text"
+                defaultValue={customerSelected.addresses[0].CompanyZipCode}
                 tabIndex={9}
                 name="companyZipCode"
                 onChange={handleZipCodeChange}
@@ -248,6 +278,7 @@ export default function AddCustomerWidget() {
               tabIndex={10}
               name="companyStateCode"
               placeholder="State – 03"
+              defaultValue={customerSelected.addresses[0].CompanyStateCode}
             />
           </div>
         </div>

@@ -30,32 +30,3 @@ export default function App() {
     </div>
   );
 }
-
-// {
-// "CompanyID": 2,
-// "CompanyName": "VLT Toast",
-// "CompanyEmployeeCount": 5,
-// "addresses": [
-//   {
-//     "AddressID": 2,
-//     "CompanyID": 2,
-//     "CompanyStreetAddress": "3, Gandhi Street, Shenoy nagar",
-//     "CompanyCity": null,
-//     "CompanyStateCode": "TX",
-//     "CompanyZipCode": "600030",
-//     "CompanyAddressPrimary": "on",
-//     "CompanyAddressHQ": "on"
-//   }
-// ],
-// "contacts": [
-//   {
-//     "ContactID": 2,
-//     "AddressID": 2,
-//     "CompanyID": 2,
-//     "ContactName": "VLMan",
-//     "ContactEmail": "vlman@vl.com",
-//     "ContactPhonePrefix": "376",
-//     "ContactPhone": 123456789
-//   }
-// ]
-// }
