@@ -1,6 +1,16 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+import { setSearchValue } from "../app/customer.slice";
 
 export default function CustomersListHeadings() {
+  const dispatch = useDispatch();
+
+  const setSearch = (e: any) => {
+    let value = e.target.value;
+
+    dispatch(setSearchValue(value ? value : null));
+  };
+
   return (
     <div className="flex justify-between items-center">
       <span className="text-xl">Customers</span>
@@ -24,6 +34,7 @@ export default function CustomersListHeadings() {
           <input
             type="text"
             placeholder="Search"
+            onChange={setSearch}
             className="border p-2.5 rounded pl-7"
           />
         </div>

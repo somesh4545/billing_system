@@ -4,6 +4,7 @@ export interface Company {
   CompanyEmployeeCount: number
   addresses: Address[]
   contacts: Contact[]
+  isVisible?: boolean
 }
 
 export interface Address {

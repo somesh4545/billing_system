@@ -3,10 +3,12 @@ import { createSlice } from "@reduxjs/toolkit";
 export const customerSlice = createSlice({
   name: "customers",
   initialState: {
+    searchValue: null,
     isPanelOpen: false,
     wasRecordAdded: null,
     customerSelected: null,
     isCustomerDetailsPanelOpen: false,
+    loadedCustomers: []
   },
   reducers: {
     openPanel: (state) => {
@@ -33,19 +35,31 @@ export const customerSlice = createSlice({
       return state;
     },
 
+    setSearchValue: (state, { payload }) => {
+      state.searchValue = payload;
+      return state;
+    },
+
     setCustomerDetailsPanelOpen: (state, { payload }) => {
       state.isCustomerDetailsPanelOpen = payload;
     },
+
+    setLoadedCustomers: (state, { payload }) => {
+      state.loadedCustomers = payload;
+      return state;
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
-  closePanel,
   openPanel,
+  closePanel,
+  setSearchValue,
+  setSelectedCustomer,
   updateWasRecordAdded,
   setCustomerDetailsPanelOpen,
-  setSelectedCustomer,
+  setLoadedCustomers
 } = customerSlice.actions;
 
 export default customerSlice.reducer;

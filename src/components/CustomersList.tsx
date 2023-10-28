@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   closePanel,
   setCustomerDetailsPanelOpen,
+  setLoadedCustomers,
   setSelectedCustomer,
 } from "../app/customer.slice";
 
@@ -15,8 +16,13 @@ export default function CustomersList() {
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
   const [customers, setCustomers] = useState<Company[]>([]);
-  const { isPanelOpen, wasRecordAdded, isCustomerDetailsPanelOpen } =
-    useSelector((state: any) => state.customers);
+  const {
+    isPanelOpen,
+    wasRecordAdded,
+    isCustomerDetailsPanelOpen,
+    searchValue,
+    loadedCustomers,
+  } = useSelector((state: any) => state.customers);
 
   const getCustomers = async function () {
     const request = axios.get(`${apiBaseURL}/api/customers/list`);
@@ -30,6 +36,7 @@ export default function CustomersList() {
       });
 
       setCustomers(companies);
+      dispatch(setLoadedCustomers(companies));
     }
   };
 
@@ -44,11 +51,35 @@ export default function CustomersList() {
     dispatch(closePanel());
   };
 
+  const filterCustomers = (customers: Company[], searchExpression): Company[] => {
+    return customers.filter(company => {
+      if (company.CompanyName.toLowerCase().search(searchExpression) > -1) {
+        return true;
+      }
+
+      return false;
+    })
+  }
+
   useEffect(
     function () {
       getCustomers();
     },
     [wasRecordAdded]
+  );
+
+  useEffect(
+    function () {
+      if (!searchValue) {
+        setCustomers(loadedCustomers);
+        return;
+      }
+
+      const searchExpression = new RegExp(searchValue.toLowerCase(), "gm");
+
+      setCustomers(filterCustomers(loadedCustomers, searchExpression))
+    },
+    [searchValue]
   );
 
   return (

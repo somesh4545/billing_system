@@ -68,6 +68,7 @@ export default function AddCustomerWidget() {
       "companyStreetAddress",
       form.current?.companyStreetAddress.value
     );
+    formData.append("companyCity", form.current?.companyCity.value);
     formData.append("companyStateCode", form.current?.companyStateCode.value);
     formData.append("companyZipCode", form.current?.companyZipCode.value);
     formData.append(
