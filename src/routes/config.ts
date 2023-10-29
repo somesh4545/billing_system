@@ -11,4 +11,8 @@ export const routes = [
     name: "Customers",
     path: "/customers",
   },
+  {
+    name: "Services",
+    path: "/services",
+  },
 ];
