@@ -30,4 +30,12 @@
     place-items: center;
     border-top-width: 1px;
   }
+
+  details summary {
+    list-style: none;
+  }
+
+  details summary::-webkit-details-marker {
+    display:none;
+  }
 }

@@ -5,6 +5,7 @@ export const customerSlice = createSlice({
   initialState: {
     searchValue: null,
     isPanelOpen: false,
+    openFilters: false,
     wasRecordAdded: null,
     customerSelected: null,
     addingAnotherContact: false,
@@ -70,6 +71,11 @@ export const customerSlice = createSlice({
       state.customerSelectedIndex = payload;
       return state;
     },
+
+    setOpenFilters: (state, { payload }) => {
+      state.openFilters = payload;
+      return state;
+    }
   },
 });
 
@@ -85,6 +91,7 @@ export const {
   setAddingAnotherContact,
   finishedAddingContactOrAddress,
   setCustomerSelectedIndex,
+  setOpenFilters,
   setAddingAnotherAddress
 } = customerSlice.actions;
 

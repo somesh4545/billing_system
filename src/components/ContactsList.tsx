@@ -19,40 +19,45 @@ export default function ContactsList() {
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm grid gap-3">
-      <fieldset className="border p-4 pt-2 rounded border-gray-300">
+      <fieldset className="border p-4 pt-2 rounded max-h-[290px] border-gray-300 overflow-y-hidden">
         <legend>
           <div className="px-2">List of Contacts</div>
         </legend>
-        <div className="bg-white rounded pt-3 p-4 max-h-[273.5px] h-full shadow-sm grid grid-rows-[1fr_auto]">
+        <div className="bg-white rounded pt-3 p-4 h-full shadow-sm grid grid-rows-[1fr_auto] overflow-scroll">
           <div className="h-full">
             {customerSelected.contacts.map((contact, _) => (
-              <details key={`${contact.ContactID}_${contact.ContactName}`}>
-                <summary>{contact.ContactName}</summary>
+              <details
+                className="cursor-pointer border-b"
+                key={`${contact.ContactID}_${contact.ContactName}`}
+              >
+                <summary className="flex gap-2 border-b pb-1">
+                  <input type="checkbox" name="" id="" />
+                  <span>{contact.ContactName}</span>
+                </summary>
 
-                <div className="grid pt-2">
-                  <div className="flex justify-between pt-1">
-                    <span className="text-[#888]">Contact Name</span>
-                    <span>{contact.ContactName}</span>
+                <div className="py-2 grid">
+                  <div className="grid grid-cols-2 grid-rows-1 gap-2 mt-2">
+                    <div className="text-[#888] text-sm">Contact Name</div>
+                    <div className="text-right">{contact.ContactName}</div>
                   </div>
-                  <div className="flex justify-between pt-1">
-                    <span className="text-[#888]">Contact Phone</span>
-                    <span>
-                      +{contact.ContactPhonePrefix} {contact.ContactPhone}
-                    </span>
+                  <div className="grid grid-cols-2 grid-rows-1 gap-2 mt-2">
+                    <div className="text-[#888] text-sm">Contact Phone No.</div>
+                    <div className="text-right">+{contact.ContactPhonePrefix} {contact.ContactPhone}</div>
                   </div>
-                  <div className="flex justify-between pt-1">
-                    <span className="text-[#888]">Contact Address</span>
-                    <span>
-                      {customerSelected.addresses[_]?.CompanyStreetAddress}
-                    </span>
+                  <div className="grid grid-cols-2 grid-rows-1 gap-2 mt-2">
+                    <div className="text-[#888] text-sm">Contact Address</div>
+                    <div className="text-right">{contact.CompanyStreetAddress}</div>
                   </div>
                 </div>
               </details>
             ))}
           </div>
 
-          <div className="flex justify-end h-max">
-            <button onClick={addContact} className="bg-blue-200 p-2 rounded">
+          <div className="flex justify-end h-max mt-2">
+            <button
+              onClick={addContact}
+              className="bg-blue-200 p-1 rounded px-2.5"
+            >
               +
             </button>
           </div>
@@ -82,7 +87,10 @@ export default function ContactsList() {
           </div>
 
           <div className="flex justify-end h-max">
-            <button onClick={addAddress} className="bg-blue-200 p-2 rounded">
+            <button
+              onClick={addAddress}
+              className="bg-blue-200 p-1 rounded px-2.5"
+            >
               +
             </button>
           </div>

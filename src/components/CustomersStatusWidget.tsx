@@ -1,6 +1,11 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 export default function CustomersStatusWidget() {
+  const { loadedCustomers, customersPercentChange } = useSelector(
+    (state: any) => state.customers
+  );
+
   return (
     <div className="bg-white rounded-xl p-4">
       <div className="flex justify-between">
@@ -28,7 +33,7 @@ export default function CustomersStatusWidget() {
           <tbody className="text-lg">
             <tr>
               <td>
-                <span>70</span>
+                <span>{loadedCustomers.length}</span>
                 <span className="text-xs ml-2 text-[#888888]">+15.80%</span>
               </td>
               <td>
