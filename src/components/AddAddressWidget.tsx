@@ -10,7 +10,7 @@ import {
 
 export default function AddAddress() {
   const dispatch = useDispatch();
-  const { customerSelected } = useSelector((state: any) => state.customers);
+  const { customerSelected, editingContactID } = useSelector((state: any) => state.customers);
 
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
@@ -144,7 +144,7 @@ export default function AddAddress() {
               tabIndex={3}
               disabled
               name="contactName"
-              defaultValue={customerSelected.contacts[0].ContactName}
+              defaultValue={customerSelected.contacts[editingContactID ?? 0].ContactName}
               placeholder="Contact Name"
             />
             <input
@@ -154,7 +154,7 @@ export default function AddAddress() {
               type="text"
               tabIndex={3}
               name="contactEmail"
-              defaultValue={customerSelected.contacts[0].ContactEmail}
+              defaultValue={customerSelected.contacts[editingContactID ?? 0].ContactEmail}
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
@@ -176,7 +176,7 @@ export default function AddAddress() {
                       code.code === "US" ? null : (
                         <option
                           defaultValue={
-                            customerSelected.contacts[0].ContactPhonePrefix
+                            customerSelected.contacts[editingContactID ?? 0].ContactPhonePrefix
                           }
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
@@ -194,7 +194,7 @@ export default function AddAddress() {
                 tabIndex={6}
                 disabled
                 name="contactPhone"
-                defaultValue={customerSelected.contacts[0].ContactPhone}
+                defaultValue={customerSelected.contacts[editingContactID ?? 0].ContactPhone}
                 placeholder="1234567890"
               />
             </div>

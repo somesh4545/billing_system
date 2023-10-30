@@ -8,9 +8,9 @@ import {
   updateWasRecordAdded,
 } from "../app/customer.slice";
 
-export default function AddContact() {
+export default function AddAddressAndContact() {
   const dispatch = useDispatch();
-  const { customerSelected, editingAddressID } = useSelector(
+  const { isCustomerDetailsPanelOpen, customerSelected } = useSelector(
     (state: any) => state.customers
   );
 
@@ -19,13 +19,63 @@ export default function AddContact() {
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
+  const handleZipCodeChange = (e: any) => {
+    const inputValue = e.target.value;
+    const element = zipCodeError.current as HTMLParagraphElement;
+
+    // Is numberic
+    if (
+      /\d/gm.test(inputValue) &&
+      (/-/gm.test(inputValue) || !/\D/.test(inputValue))
+    ) {
+      if (/-/gm.test(inputValue)) {
+        inputValue.length != 10
+          ? (element.innerHTML =
+              "<div class='pt-1'>The ZIP code must be in the format 00000-0000.</div>")
+          : (element.innerHTML = "");
+
+        return;
+      }
+
+      inputValue.length != 5
+        ? (element.innerHTML =
+            "<div class='pt-1'>The ZIP code must be in the format 00000.</div>")
+        : (element.innerHTML = "");
+
+      return;
+    }
+
+    // Input is alphanumeric
+    if (/\w/gm.test(inputValue)) {
+      inputValue.length != 10
+        ? (element.innerHTML =
+            "<div class='pt-1'>The ZIP code must be alphanumeric and consist of exactly 10 characters.</div>")
+        : (element.innerHTML = "");
+
+      return;
+    }
+
+    element.innerHTML = "";
+  };
+
   const createCustomer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData();
 
     formData.append("companyID", customerSelected.CompanyID);
-
+    formData.append(
+      "companyStreetAddress",
+      form.current?.companyStreetAddress.value
+    );
+    formData.append("companyCity", form.current?.companyCity.value);
+    formData.append("companyStateCode", form.current?.companyStateCode.value);
+    formData.append("companyZipCode", form.current?.companyZipCode.value);
+    formData.append(
+      "companyAddressPrimary",
+      form.current?.companyAddressPrimary.value
+    );
+    formData.append("companyAddressHQ", form.current?.companyAddressHQ.value);
     formData.append("contactName", form.current?.contactName.value);
     formData.append("contactEmail", form.current?.contactEmail.value);
     formData.append(
@@ -37,15 +87,14 @@ export default function AddContact() {
     axios({
       method: "POST",
       data: formData,
-      url: `${apiBaseURL}/api/customers/addContact`,
+      url: `${apiBaseURL}/api/customers/addAddressAndContact`,
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
-        dispatch(updateWasRecordAdded(response.data));
         dispatch(finishedAddingContactOrAddress());
+        dispatch(updateWasRecordAdded(response.data));
       })
       .catch(function (response) {
-        //handle error
         dispatch(finishedAddingContactOrAddress());
         dispatch(closePanel());
         console.log(response);
@@ -54,7 +103,7 @@ export default function AddContact() {
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
-      <h2>Add Another Details</h2>
+      <h2>Add new Customer Details</h2>
 
       <form
         ref={form}
@@ -71,19 +120,19 @@ export default function AddContact() {
               required
               className="p-2 rounded-sm border"
               type="text"
-              defaultValue={customerSelected.CompanyName}
               tabIndex={1}
-              disabled
               name="companyName"
+              defaultValue={customerSelected.CompanyName}
+              disabled
               placeholder="Name"
             />
             <input
               required
               className="p-2 rounded-sm border"
               type="number"
-              disabled
               tabIndex={2}
               defaultValue={customerSelected.CompanyEmployeeCount}
+              disabled
               name="companyEmployeeCount"
               placeholder="No of Employees"
             />
@@ -157,28 +206,11 @@ export default function AddContact() {
             <div>Add Address</div>
             <div className="flex justify-center gap-3 text-xs">
               <div className="flex items-center gap-0.5">
-                <input
-                  type="checkbox"
-                  disabled
-                  defaultChecked={
-                    customerSelected.addresses[editingAddressID ?? 0]
-                      .CompanyAddressPrimary == "on"
-                  }
-                  name="companyAddressPrimary"
-                  id=""
-                />
+                <input type="checkbox" name="companyAddressPrimary" id="" />
                 <span>Primary</span>
               </div>
               <div className="flex items-center gap-0.5">
-                <input
-                  type="checkbox"
-                  name="companyAddressHQ"
-                  defaultChecked={
-                    customerSelected.addresses[editingAddressID ?? 0]
-                      .CompanyAddressHQ == "on"
-                  }
-                  id=""
-                />
+                <input type="checkbox" name="companyAddressHQ" id="" />
                 <span>HQ</span>
               </div>
             </div>
@@ -188,25 +220,16 @@ export default function AddContact() {
               required
               className="p-2 rounded-sm border"
               type="text"
-              disabled
               tabIndex={7}
               name="companyStreetAddress"
               placeholder="Street Name"
-              defaultValue={
-                customerSelected.addresses[editingAddressID ?? 0]
-                  .CompanyStreetAddress
-              }
             />
             <input
               required
               className="p-2 rounded-sm border"
               type="text"
               tabIndex={8}
-              disabled
               name="companyCity"
-              defaultValue={
-                customerSelected.addresses[editingAddressID ?? 0].CompanyCity
-              }
               placeholder="City"
             />
             <div className="w-full">
@@ -214,13 +237,9 @@ export default function AddContact() {
                 required
                 className="p-2 rounded-sm border w-full"
                 type="text"
-                defaultValue={
-                  customerSelected.addresses[editingAddressID ?? 0]
-                    .CompanyZipCode
-                }
                 tabIndex={9}
-                disabled
                 name="companyZipCode"
+                onChange={handleZipCodeChange}
                 placeholder="ZIP Code"
               />
               <p className="text-xs text-rose-800" ref={zipCodeError}></p>
@@ -230,13 +249,8 @@ export default function AddContact() {
               className="p-2 rounded-sm border"
               type="text"
               tabIndex={10}
-              disabled
               name="companyStateCode"
               placeholder="State – 03"
-              defaultValue={
-                customerSelected.addresses[editingAddressID ?? 0]
-                  .CompanyStateCode
-              }
             />
           </div>
         </div>

@@ -14,6 +14,7 @@ import ContactsList from "../components/ContactsList";
 import UpdateCustomer from "../components/UpdateCustomerWidget";
 import AddContact from "../components/AddContactWidget";
 import AddAddress from "../components/AddAddressWidget";
+import AddAddressAndContact from "../components/AddAddressAndContact";
 
 export default function Customers() {
   const dispatch = useDispatch();
@@ -73,18 +74,7 @@ export default function Customers() {
             {addingAnotherContact && !addingAnotherAddress && <AddContact />}
             {!addingAnotherContact && addingAnotherAddress && <AddAddress />}
             {addingAnotherContact && addingAnotherAddress && (
-              <div>
-                <p>
-                  You cannot add contact and address yet. This feature is under
-                  development.
-                </p>
-                <button
-                  className="w-full mt-2 p-2 bg-indigo-200 rounded hover:bg-indigo-300"
-                  onClick={reset}
-                >
-                  Reset.
-                </button>
-              </div>
+              <AddAddressAndContact />
             )}
           </div>
         </div>
