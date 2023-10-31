@@ -50,7 +50,7 @@ export default function AddContact() {
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
-        dispatch(updateWasRecordAdded(response.data));
+        dispatch(updateWasRecordAdded(Math.random() * 10e6));
         dispatch(finishedAddingContactOrAddress());
       })
       .catch(function (response) {

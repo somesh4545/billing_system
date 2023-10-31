@@ -91,8 +91,7 @@ export default function AddCustomerWidget() {
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
-        console.log(response.data?.CompanyID);
-        dispatch(updateWasRecordAdded(response.data?.CompanyID));
+        dispatch(updateWasRecordAdded(Math.random() * 10e6));
         dispatch(closePanel());
       })
       .catch(function (response) {

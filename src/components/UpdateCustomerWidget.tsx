@@ -95,7 +95,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
-        dispatch(updateWasRecordAdded(response.data));
+        dispatch(updateWasRecordAdded(Math.random() * 10e6));
         dispatch(closePanel());
       })
       .catch(function (response) {
