@@ -31,11 +31,12 @@ export default function CustomersList() {
 
     if (data?.status == true) {
       const companies: any = {};
-      let currentID = null;
-
-      if (data.results.length > 0) currentID = data.results[0].CompanyID;
+      let currentID: number | null = null;
 
       data.results.map((result: Company) => {
+        if (result.CompanyID != currentID)
+          currentID = result.CompanyID;
+
         if (result.CompanyID == currentID) {
           if (companies[currentID] == undefined) {
             companies[currentID] = [result];
@@ -44,6 +45,8 @@ export default function CustomersList() {
           }
         }
       });
+
+      console.log(companies);
 
       setCustomers(Object.values(companies));
       dispatch(setLoadedCustomers(Object.values(companies)));
@@ -177,14 +180,17 @@ export default function CustomersList() {
                 <>
                   <td>
                     {customer[0].CompanyEmployeeCount}{" "}
-                    {customer[0].CompanyEmployeeCount < 2 ? "Worker" : "Workers"}
+                    {customer[0].CompanyEmployeeCount < 2
+                      ? "Worker"
+                      : "Workers"}
                   </td>
                   <td>{customer[0].ContactName}</td>
                   <td>
                     <div className="flex justify-between">
                       <span>
                         {"+"}
-                        {customer[0].ContactPhonePrefix} {customer[0].ContactPhone}
+                        {customer[0].ContactPhonePrefix}{" "}
+                        {customer[0].ContactPhone}
                       </span>
                       <div className="flex items-end">
                         <button
