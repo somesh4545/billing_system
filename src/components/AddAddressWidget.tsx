@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   closePanel,
   finishedAddingContactOrAddress,
+  setAddingAnotherAddress,
   updateWasRecordAdded,
 } from "../app/customer.slice";
 
@@ -88,11 +89,13 @@ export default function AddAddress() {
       .then(function (response) {
         dispatch(updateWasRecordAdded(Math.random() * 10e6));
         dispatch(finishedAddingContactOrAddress());
+        dispatch(setAddingAnotherAddress(false))
         dispatch(closePanel());
       })
       .catch(function (response) {
         //handle error
         dispatch(finishedAddingContactOrAddress());
+        dispatch(setAddingAnotherAddress(false))
         dispatch(closePanel());
       });
   };
