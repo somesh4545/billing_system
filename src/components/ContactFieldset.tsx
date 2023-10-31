@@ -10,7 +10,8 @@ export default function ContactFieldset() {
   const contactIDRef = useRef<number>();
   const { customerSelected } = useSelector((state: any) => state.customers);
 
-  function addContact() {
+  function addContact(value) {
+    setEditingContactIDValue(value);
     dispatch(setAddingAnotherContact(true));
   }
 
@@ -34,9 +35,25 @@ export default function ContactFieldset() {
                   className="cursor-pointer border-b"
                   key={`${customer.ContactID}_${customer.ContactName}`}
                 >
-                  <summary className="flex gap-2 border-b pb-1">
-                    <input type="checkbox" name="" id="" />
-                    <span>{customer.ContactName}</span>
+                  <summary className="flex gap-2 border-b pb-1 items-end justify-between">
+                    <div className="flex gap-2">
+                      <input type="checkbox" name="" id="" />
+                      <span>{customer.ContactName}</span>
+                    </div>
+
+                    <div className="flex justify-end h-max mt-2">
+                      <button
+                        onClick={() =>
+                          addContact({
+                            index: _,
+                            AddressID: customer.AddressID,
+                          })
+                        }
+                        className="bg-blue-200 p-1 rounded px-2.5 text-sm"
+                      >
+                        +
+                      </button>
+                    </div>
                   </summary>
 
                   <div className="py-2 grid">
@@ -99,15 +116,6 @@ export default function ContactFieldset() {
               );
             }
           })}
-        </div>
-
-        <div className="flex justify-end h-max mt-2">
-          <button
-            onClick={addContact}
-            className="bg-blue-200 p-1 rounded px-2.5"
-          >
-            +
-          </button>
         </div>
       </div>
     </fieldset>

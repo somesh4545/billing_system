@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dialcodes from "../assets/dialcodes.json";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,7 +10,10 @@ import {
 
 export default function AddContact() {
   const dispatch = useDispatch();
-  const { customerSelected, editingAddressID } = useSelector(
+
+  const [editingCustomer, setEditingCustomer] = useState<any>({});
+
+  const { customerSelected, editingContactID } = useSelector(
     (state: any) => state.customers
   );
 
@@ -24,8 +27,8 @@ export default function AddContact() {
 
     const formData = new FormData();
 
-    formData.append("addressID", customerSelected.AddressID);
-    formData.append("companyID", customerSelected.CompanyID);
+    formData.append("addressID", editingCustomer?.AddressID);
+    formData.append("companyID", editingCustomer?.CompanyID);
 
     formData.append("contactName", form.current?.contactName.value);
     formData.append("contactEmail", form.current?.contactEmail.value);
@@ -49,9 +52,12 @@ export default function AddContact() {
         //handle error
         dispatch(finishedAddingContactOrAddress());
         dispatch(closePanel());
-        console.log(response);
       });
   };
+
+  useEffect(function () {
+    setEditingCustomer(customerSelected[editingContactID?.index]);
+  }, [editingContactID]);
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
@@ -72,7 +78,7 @@ export default function AddContact() {
               required
               className="p-2 rounded-sm border"
               type="text"
-              defaultValue={customerSelected.CompanyName}
+              defaultValue={editingCustomer?.CompanyName}
               tabIndex={1}
               disabled
               name="companyName"
@@ -84,7 +90,7 @@ export default function AddContact() {
               type="number"
               disabled
               tabIndex={2}
-              defaultValue={customerSelected.CompanyEmployeeCount}
+              defaultValue={editingCustomer?.CompanyEmployeeCount}
               name="companyEmployeeCount"
               placeholder="No of Employees"
             />
@@ -162,8 +168,7 @@ export default function AddContact() {
                   type="checkbox"
                   disabled
                   defaultChecked={
-                    customerSelected
-                      .CompanyAddressPrimary == "on"
+                    editingCustomer?.CompanyAddressPrimary == "on"
                   }
                   name="companyAddressPrimary"
                   id=""
@@ -174,10 +179,7 @@ export default function AddContact() {
                 <input
                   type="checkbox"
                   name="companyAddressHQ"
-                  defaultChecked={
-                    customerSelected
-                      .CompanyAddressHQ == "on"
-                  }
+                  defaultChecked={editingCustomer?.CompanyAddressHQ == "on"}
                   id=""
                 />
                 <span>HQ</span>
@@ -193,10 +195,7 @@ export default function AddContact() {
               tabIndex={7}
               name="companyStreetAddress"
               placeholder="Street Name"
-              defaultValue={
-                customerSelected
-                  .CompanyStreetAddress
-              }
+              defaultValue={editingCustomer?.CompanyStreetAddress}
             />
             <input
               required
@@ -205,9 +204,7 @@ export default function AddContact() {
               tabIndex={8}
               disabled
               name="companyCity"
-              defaultValue={
-                customerSelected.CompanyCity
-              }
+              defaultValue={editingCustomer?.CompanyCity}
               placeholder="City"
             />
             <div className="w-full">
@@ -215,10 +212,7 @@ export default function AddContact() {
                 required
                 className="p-2 rounded-sm border w-full"
                 type="text"
-                defaultValue={
-                  customerSelected
-                    .CompanyZipCode
-                }
+                defaultValue={editingCustomer?.CompanyZipCode}
                 tabIndex={9}
                 disabled
                 name="companyZipCode"
@@ -234,10 +228,7 @@ export default function AddContact() {
               disabled
               name="companyStateCode"
               placeholder="State – 03"
-              defaultValue={
-                customerSelected
-                  .CompanyStateCode
-              }
+              defaultValue={editingCustomer?.CompanyStateCode}
             />
           </div>
         </div>

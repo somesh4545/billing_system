@@ -33,6 +33,7 @@ export default function AddressFieldset() {
                     className="cursor-pointer"
                     src="/svgs/pencil.icon.svg"
                     alt="Pencil Icon"
+                    onClick={() => alert("Please Update the address using the contacts linked to this address.")}
                   />
                 </span>
               </div>
