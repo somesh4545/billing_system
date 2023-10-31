@@ -24,6 +24,8 @@ export default function Customers() {
     isCustomerDetailsPanelOpen,
     addingAnotherContact,
     addingAnotherAddress,
+    editingAddressID,
+    editingContactID,
   } = useSelector((state: any) => state.customers);
 
   const reset = () => {
@@ -70,7 +72,12 @@ export default function Customers() {
             )}
             {isCustomerDetailsPanelOpen &&
               !addingAnotherContact &&
-              !addingAnotherAddress && <UpdateCustomer />}
+              !addingAnotherAddress && (
+                <UpdateCustomer
+                  editingAddressID={editingAddressID}
+                  editingContactID={editingContactID}
+                />
+              )}
             {addingAnotherContact && !addingAnotherAddress && <AddContact />}
             {!addingAnotherContact && addingAnotherAddress && <AddAddress />}
             {addingAnotherContact && addingAnotherAddress && (

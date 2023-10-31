@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"name": "benefits-billing-system",
+			"path": "../../../benefits-billing-system"
+		},
+		{
+			"name": "benefits-billing-system-frontend",
+			"path": "../.."
+		}
+	]
+}

@@ -24,6 +24,7 @@ export default function AddContact() {
 
     const formData = new FormData();
 
+    formData.append("addressID", editingAddressID ?? 0);
     formData.append("companyID", customerSelected.CompanyID);
 
     formData.append("contactName", form.current?.contactName.value);
