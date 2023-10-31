@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddingAnotherContact } from "../app/customer.slice";
+import {
+  setAddingAnotherContact,
+  setEditingContactID,
+} from "../app/customer.slice";
 
 export default function ContactFieldset() {
   const dispatch = useDispatch();
@@ -11,6 +14,10 @@ export default function ContactFieldset() {
     dispatch(setAddingAnotherContact(true));
   }
 
+  function setEditingContactIDValue(value) {
+    dispatch(setEditingContactID(value));
+  }
+
   return (
     <fieldset className="border p-4 pt-2 rounded max-h-[290px] border-gray-300 overflow-y-hidden">
       <legend>
@@ -18,7 +25,7 @@ export default function ContactFieldset() {
       </legend>
       <div className="bg-white rounded pt-3 p-4 h-full shadow-sm grid grid-rows-[1fr_auto] overflow-scroll">
         <div className="h-full flex gap-2 flex-col">
-          {customerSelected.map((customer) => {
+          {customerSelected.map((customer, _) => {
             if (contactIDRef.current != customer.ContactID) {
               contactIDRef.current = customer.ContactID;
 
@@ -39,7 +46,16 @@ export default function ContactFieldset() {
                         <span className="break-all">
                           {customer.ContactName}
                         </span>
-                        <img src="/svgs/pencil.icon.svg" alt="Pencil Icon" />
+                        <img
+                          src="/svgs/pencil.icon.svg"
+                          alt="Pencil Icon"
+                          onClick={() =>
+                            setEditingContactIDValue({
+                              index: _,
+                              AddressID: customer.AddressID,
+                            })
+                          }
+                        />
                       </div>
                     </div>
                     <div className="flex gap-2 justify-between relative">

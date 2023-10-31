@@ -98,7 +98,6 @@ export default function AddCustomerWidget() {
       .catch(function (response) {
         //handle error
         dispatch(closePanel());
-        console.log(response);
       });
   };
 

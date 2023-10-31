@@ -8,6 +8,8 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
   const dispatch = useDispatch();
   const { customerSelected } = useSelector((state: any) => state.customers);
 
+  const [editingCustomer, setEditingCustomer] = useState<any>({});
+
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
   // @ts-ignore
@@ -52,22 +54,14 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
     element.innerHTML = "";
   };
 
-  const createCustomer = (e: React.FormEvent<HTMLFormElement>) => {
+  const updateCustomer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData();
 
-    formData.append("companyID", customerSelected.CompanyID);
-    formData.append(
-      "addressID",
-      customerSelected.addresses[editingAddressID ? editingAddressID : 0]
-        .AddressID
-    );
-    formData.append(
-      "contactID",
-      customerSelected.contacts[editingContactID ? editingContactID : 0]
-        .ContactID
-    );
+    formData.append("companyID", editingCustomer?.CompanyID);
+    formData.append("addressID", editingCustomer?.AddressID);
+    formData.append("contactID", editingCustomer?.ContactID);
 
     formData.append("companyName", form.current?.companyName.value);
     formData.append(
@@ -111,14 +105,21 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
       });
   };
 
-  return (
+  useEffect(
+    function () {
+      setEditingCustomer(customerSelected[editingContactID?.index]);
+    },
+    [editingContactID]
+  );
+
+  return editingContactID && (
     <div className={"bg-blue-50 p-4 rounded-sm" + " " + editingAddressID}>
       <h2>Update Customer Details</h2>
 
       <form
         ref={form}
         method="POST"
-        onSubmit={createCustomer}
+        onSubmit={updateCustomer}
         className="mt-6 flex flex-col gap-3"
       >
         <div className="grid gap-1">
@@ -130,7 +131,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               required
               className="p-2 rounded-sm border"
               type="text"
-              defaultValue={customerSelected.CompanyName}
+              defaultValue={editingCustomer?.CompanyName}
               tabIndex={1}
               name="companyName"
               placeholder="Name"
@@ -140,7 +141,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               className="p-2 rounded-sm border"
               type="number"
               tabIndex={2}
-              defaultValue={customerSelected.CompanyEmployeeCount}
+              defaultValue={editingCustomer?.CompanyEmployeeCount}
               name="companyEmployeeCount"
               placeholder="No of Employees"
             />
@@ -158,7 +159,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               type="text"
               tabIndex={3}
               name="contactName"
-              defaultValue={customerSelected.ContactName}
+              defaultValue={editingCustomer?.ContactName}
               placeholder="Contact Name"
             />
             <input
@@ -167,7 +168,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               type="text"
               tabIndex={3}
               name="contactEmail"
-              defaultValue={customerSelected.ContactEmail}
+              defaultValue={editingCustomer?.ContactEmail}
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
@@ -187,7 +188,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                     .map((code) =>
                       code.code === "US" ? null : (
                         <option
-                          defaultValue={customerSelected.ContactPhonePrefix}
+                          defaultValue={editingCustomer?.ContactPhonePrefix}
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
                         >
@@ -203,7 +204,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                 type="number"
                 tabIndex={6}
                 name="contactPhone"
-                defaultValue={customerSelected.ContactPhone}
+                defaultValue={editingCustomer?.ContactPhone}
                 placeholder="1234567890"
               />
             </div>
@@ -220,7 +221,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               <div className="flex items-center gap-0.5">
                 <input
                   type="checkbox"
-                  defaultChecked={customerSelected.CompanyAddressPrimary}
+                  defaultChecked={editingCustomer?.CompanyAddressPrimary}
                   name="companyAddressPrimary"
                   id=""
                 />
@@ -230,7 +231,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                 <input
                   type="checkbox"
                   name="companyAddressHQ"
-                  defaultChecked={customerSelected.CompanyAddressHQ}
+                  defaultChecked={editingCustomer?.CompanyAddressHQ}
                   id=""
                 />
                 <span>HQ</span>
@@ -245,7 +246,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               tabIndex={7}
               name="companyStreetAddress"
               placeholder="Street Name"
-              defaultValue={customerSelected.CompanyStreetAddress}
+              defaultValue={editingCustomer?.CompanyStreetAddress}
             />
             <input
               required
@@ -253,7 +254,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               type="text"
               tabIndex={8}
               name="companyCity"
-              defaultValue={customerSelected.CompanyCity}
+              defaultValue={editingCustomer?.CompanyCity}
               placeholder="City"
             />
             <div className="w-full">
@@ -261,7 +262,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                 required
                 className="p-2 rounded-sm border w-full"
                 type="text"
-                defaultValue={customerSelected.CompanyZipCode}
+                defaultValue={editingCustomer?.CompanyZipCode}
                 tabIndex={9}
                 name="companyZipCode"
                 onChange={handleZipCodeChange}
@@ -276,7 +277,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               tabIndex={10}
               name="companyStateCode"
               placeholder="State – 03"
-              defaultValue={customerSelected.CompanyStateCode}
+              defaultValue={editingCustomer?.CompanyStateCode}
             />
           </div>
         </div>
