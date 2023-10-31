@@ -8,64 +8,6 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
   const dispatch = useDispatch();
   const { customerSelected } = useSelector((state: any) => state.customers);
 
-  const [contactName, setContactName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
-  const [contactPhonePrefix, setContactPhonePrefix] = useState("");
-
-  const [companyCity, setCompanyCity] = useState("");
-  const [companyZipCode, setCompanyZipCode] = useState("");
-  const [companyStateCode, setCompanyStateCode] = useState("");
-  const [companyAddressHQ, setCompanyAddressHQ] = useState(false);
-  const [companyStreetAddress, setCompanyStreetAddress] = useState("");
-  const [companyAddressPrimary, setCompanyAddressPrimary] = useState(false);
-
-  useEffect(
-    function () {
-      let _editingAddressID = editingAddressID;
-      let _editingContactID = editingContactID;
-
-      if (!_editingAddressID) {
-        _editingAddressID = 0;
-      }
-
-      if (!_editingContactID) {
-        _editingContactID = 0;
-      }
-
-      setContactName(customerSelected.contacts[_editingContactID].ContactName);
-      setContactEmail(
-        customerSelected.contacts[_editingContactID].ContactEmail
-      );
-      setContactPhone(
-        customerSelected.contacts[_editingContactID].ContactPhone
-      );
-      setContactPhonePrefix(
-        customerSelected.contacts[_editingContactID].ContactPhonePrefix
-      );
-
-      setCompanyCity(customerSelected.addresses[_editingAddressID].CompanyCity);
-      setCompanyZipCode(
-        customerSelected.addresses[_editingAddressID].CompanyZipCode
-      );
-      setCompanyStateCode(
-        customerSelected.addresses[_editingAddressID].CompanyStateCode
-      );
-      setCompanyAddressHQ(
-        customerSelected.addresses[_editingAddressID].CompanyAddressHQ
-      );
-      setCompanyStreetAddress(
-        customerSelected.addresses[_editingAddressID].CompanyStreetAddress
-      );
-      setCompanyAddressPrimary(
-        customerSelected.addresses[_editingAddressID].CompanyAddressPrimary
-      );
-    },
-    [editingAddressID, editingContactID]
-  );
-
-  console.log(contactName)
-
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
   // @ts-ignore
@@ -216,7 +158,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               type="text"
               tabIndex={3}
               name="contactName"
-              defaultValue={contactName}
+              defaultValue={customerSelected.ContactName}
               placeholder="Contact Name"
             />
             <input
@@ -225,7 +167,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               type="text"
               tabIndex={3}
               name="contactEmail"
-              defaultValue={contactEmail}
+              defaultValue={customerSelected.ContactEmail}
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
@@ -245,7 +187,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                     .map((code) =>
                       code.code === "US" ? null : (
                         <option
-                          defaultValue={contactPhonePrefix}
+                          defaultValue={customerSelected.ContactPhonePrefix}
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
                         >
@@ -261,7 +203,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                 type="number"
                 tabIndex={6}
                 name="contactPhone"
-                defaultValue={contactPhone}
+                defaultValue={customerSelected.ContactPhone}
                 placeholder="1234567890"
               />
             </div>
@@ -278,7 +220,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               <div className="flex items-center gap-0.5">
                 <input
                   type="checkbox"
-                  defaultChecked={companyAddressPrimary}
+                  defaultChecked={customerSelected.CompanyAddressPrimary}
                   name="companyAddressPrimary"
                   id=""
                 />
@@ -288,7 +230,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                 <input
                   type="checkbox"
                   name="companyAddressHQ"
-                  defaultChecked={companyAddressHQ}
+                  defaultChecked={customerSelected.CompanyAddressHQ}
                   id=""
                 />
                 <span>HQ</span>
@@ -303,7 +245,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               tabIndex={7}
               name="companyStreetAddress"
               placeholder="Street Name"
-              defaultValue={companyStreetAddress}
+              defaultValue={customerSelected.CompanyStreetAddress}
             />
             <input
               required
@@ -311,7 +253,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               type="text"
               tabIndex={8}
               name="companyCity"
-              defaultValue={companyCity}
+              defaultValue={customerSelected.CompanyCity}
               placeholder="City"
             />
             <div className="w-full">
@@ -319,7 +261,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
                 required
                 className="p-2 rounded-sm border w-full"
                 type="text"
-                defaultValue={companyZipCode}
+                defaultValue={customerSelected.CompanyZipCode}
                 tabIndex={9}
                 name="companyZipCode"
                 onChange={handleZipCodeChange}
@@ -334,7 +276,7 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
               tabIndex={10}
               name="companyStateCode"
               placeholder="State – 03"
-              defaultValue={companyStateCode}
+              defaultValue={customerSelected.CompanyStateCode}
             />
           </div>
         </div>

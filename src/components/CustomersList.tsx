@@ -22,7 +22,6 @@ export default function CustomersList() {
     wasRecordAdded,
     isCustomerDetailsPanelOpen,
     searchValue,
-    customerSelectedIndex,
     loadedCustomers,
   } = useSelector((state: any) => state.customers);
 
@@ -30,17 +29,24 @@ export default function CustomersList() {
     const request = axios.get(`${apiBaseURL}/api/customers/list`);
     const { data } = await request;
 
-    if (data?.companies?.length > 0) {
-      const companies = data.companies.sort((a: Company, b: Company) => {
-        if (a.CompanyName < b.CompanyName) return -1;
-        if (a.CompanyName > b.CompanyName) return 1;
-        return 0;
+    if (data?.status == true) {
+      const companies: any = {};
+      let currentID = null;
+
+      if (data.results.length > 0) currentID = data.results[0].CompanyID;
+
+      data.results.map((result: Company) => {
+        if (result.CompanyID == currentID) {
+          if (companies[currentID] == undefined) {
+            companies[currentID] = [result];
+          } else {
+            companies[currentID].push(result);
+          }
+        }
       });
 
-      setCustomers(companies);
-      dispatch(setLoadedCustomers(companies));
-
-      dispatch(setSelectedCustomer(companies[customerSelectedIndex]));
+      setCustomers(Object.values(companies));
+      dispatch(setLoadedCustomers(Object.values(companies)));
     }
   };
 
@@ -71,37 +77,28 @@ export default function CustomersList() {
         return true;
       }
 
-      if (company.contacts.length > 0) {
-        if (searchMacro(company.contacts[0].ContactEmail, searchExpression)) {
+      if (company) {
+        if (searchMacro(company.ContactEmail, searchExpression)) {
           return true;
         }
 
-        if (searchMacro(company.contacts[0].ContactName, searchExpression)) {
+        if (searchMacro(company.ContactName, searchExpression)) {
           return true;
         }
 
-        if (searchMacro(company.contacts[0].ContactPhone, searchExpression)) {
-          return true;
-        }
-      }
-
-      if (company.addresses.length > 0) {
-        if (searchMacro(company.addresses[0].CompanyCity, searchExpression)) {
+        if (searchMacro(company.ContactPhone, searchExpression)) {
           return true;
         }
 
-        if (
-          searchMacro(
-            company.addresses[0].CompanyStreetAddress,
-            searchExpression
-          )
-        ) {
+        if (searchMacro(company.CompanyCity, searchExpression)) {
           return true;
         }
 
-        if (
-          searchMacro(company.addresses[0].CompanyZipCode, searchExpression)
-        ) {
+        if (searchMacro(company.CompanyStreetAddress, searchExpression)) {
+          return true;
+        }
+
+        if (searchMacro(company.CompanyZipCode, searchExpression)) {
           return true;
         }
       }
@@ -162,11 +159,11 @@ export default function CustomersList() {
           {customers.map((customer, _) => (
             <tr
               className="cursor-pointer"
-              key={customer.CompanyID}
+              key={customer[0].CompanyID}
               onClick={(e) => {
                 // @ts-ignore
                 if (!e.target.classList.contains("preventDefault")) {
-                  openCustomerDetails(customer, _);
+                  openCustomerDetails(customer, customer[0].CompanyID);
                 }
               }}
             >
@@ -175,25 +172,19 @@ export default function CustomersList() {
                   <input type="checkbox" />
                 </div>
               </td>
-              <td>{customer.CompanyName}</td>
+              <td>{customer[0].CompanyName}</td>
               {!isPanelOpen && !isCustomerDetailsPanelOpen ? (
                 <>
                   <td>
-                    {customer.CompanyEmployeeCount}{" "}
-                    {customer.CompanyEmployeeCount < 2 ? "Worker" : "Workers"}
+                    {customer[0].CompanyEmployeeCount}{" "}
+                    {customer[0].CompanyEmployeeCount < 2 ? "Worker" : "Workers"}
                   </td>
-                  <td>
-                    {customer?.contacts?.length > 0 &&
-                      customer?.contacts[0].ContactName}
-                  </td>
+                  <td>{customer[0].ContactName}</td>
                   <td>
                     <div className="flex justify-between">
                       <span>
                         {"+"}
-                        {customer?.contacts?.length > 0 &&
-                          customer?.contacts[0].ContactPhonePrefix}{" "}
-                        {customer?.contacts?.length > 0 &&
-                          customer?.contacts[0].ContactPhone}
+                        {customer[0].ContactPhonePrefix} {customer[0].ContactPhone}
                       </span>
                       <div className="flex items-end">
                         <button
@@ -207,10 +198,7 @@ export default function CustomersList() {
                   </td>
                   <td>
                     <div className="flex justify-between">
-                      <span>
-                        {customer?.addresses?.length > 0 &&
-                          customer?.addresses[0].CompanyStreetAddress}
-                      </span>
+                      <span>{customer[0].CompanyStreetAddress}</span>
                       <div className="flex items-end">
                         <button
                           onClick={() => openCustomerDetails(customer, _)}

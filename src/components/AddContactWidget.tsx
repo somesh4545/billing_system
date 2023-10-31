@@ -24,7 +24,7 @@ export default function AddContact() {
 
     const formData = new FormData();
 
-    formData.append("addressID", editingAddressID ?? 0);
+    formData.append("addressID", customerSelected.AddressID);
     formData.append("companyID", customerSelected.CompanyID);
 
     formData.append("contactName", form.current?.contactName.value);
@@ -162,7 +162,7 @@ export default function AddContact() {
                   type="checkbox"
                   disabled
                   defaultChecked={
-                    customerSelected.addresses[editingAddressID ?? 0]
+                    customerSelected
                       .CompanyAddressPrimary == "on"
                   }
                   name="companyAddressPrimary"
@@ -175,7 +175,7 @@ export default function AddContact() {
                   type="checkbox"
                   name="companyAddressHQ"
                   defaultChecked={
-                    customerSelected.addresses[editingAddressID ?? 0]
+                    customerSelected
                       .CompanyAddressHQ == "on"
                   }
                   id=""
@@ -194,7 +194,7 @@ export default function AddContact() {
               name="companyStreetAddress"
               placeholder="Street Name"
               defaultValue={
-                customerSelected.addresses[editingAddressID ?? 0]
+                customerSelected
                   .CompanyStreetAddress
               }
             />
@@ -206,7 +206,7 @@ export default function AddContact() {
               disabled
               name="companyCity"
               defaultValue={
-                customerSelected.addresses[editingAddressID ?? 0].CompanyCity
+                customerSelected.CompanyCity
               }
               placeholder="City"
             />
@@ -216,7 +216,7 @@ export default function AddContact() {
                 className="p-2 rounded-sm border w-full"
                 type="text"
                 defaultValue={
-                  customerSelected.addresses[editingAddressID ?? 0]
+                  customerSelected
                     .CompanyZipCode
                 }
                 tabIndex={9}
@@ -235,7 +235,7 @@ export default function AddContact() {
               name="companyStateCode"
               placeholder="State – 03"
               defaultValue={
-                customerSelected.addresses[editingAddressID ?? 0]
+                customerSelected
                   .CompanyStateCode
               }
             />

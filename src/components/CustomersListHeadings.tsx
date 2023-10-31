@@ -1,6 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenFilters, setSearchValue } from "../app/customer.slice";
+import { Company } from "..";
 
 export default function CustomersListHeadings() {
   const dispatch = useDispatch();
@@ -16,23 +17,6 @@ export default function CustomersListHeadings() {
 
   const _openFilters = () => {
     dispatch(setOpenFilters(true));
-  };
-
-  const getAllCityOptions = () => {
-    const cities = {};
-
-    loadedCustomers.forEach((customer) => {
-      customer.addresses.forEach((address) => {
-        if (cities[address.CompanyCity] == undefined)
-          cities[address.CompanyCity] = address.CompanyCity;
-      });
-    });
-
-    return Object.values(cities).map((city: any) => (
-      <option key={city} value={city}>
-        {city}
-      </option>
-    ));
   };
 
   return (
@@ -75,24 +59,6 @@ export default function CustomersListHeadings() {
             onChange={setSearch}
             className="border p-2.5 rounded pl-7"
           />
-        </div>
-
-        <div
-          className={
-            "absolute top-0 left-0 right-0 bottom-0 w-screen h-screen bg-[#00000050] place-items-center " +
-            (openFilters ? "grid" : "hidden")
-          }
-        >
-          <div className="bg-white w-full max-w-xs p-4 rounded">
-            <h2 className="text-lg font-light">Filters</h2>
-
-            <div>
-              <div>
-                <label>City</label>
-                <select>{getAllCityOptions()}</select>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

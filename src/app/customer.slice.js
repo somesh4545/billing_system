@@ -12,8 +12,6 @@ export const customerSlice = createSlice({
     addingAnotherAddress: false,
     customerSelectedIndex: null,
     isCustomerDetailsPanelOpen: false,
-    editingContactID: null,
-    editingAddressID: null,
     loadedCustomers: [],
   },
   reducers: {
@@ -78,14 +76,6 @@ export const customerSlice = createSlice({
       state.openFilters = payload;
       return state;
     },
-
-    setEditingContactID: (state, { payload }) => {
-      state.editingContactID = payload;
-    },
-
-    setEditingAddressID: (state, { payload }) => {
-      state.editingAddressID = payload;
-    }   
   },
 });
 
@@ -103,8 +93,6 @@ export const {
   setCustomerSelectedIndex,
   setOpenFilters,
   setAddingAnotherAddress,
-  setEditingAddressID,
-  setEditingContactID
 } = customerSlice.actions;
 
 export default customerSlice.reducer;
