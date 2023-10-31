@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dialcodes from "../assets/dialcodes.json";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,7 +10,10 @@ import {
 
 export default function AddAddress() {
   const dispatch = useDispatch();
-  const { customerSelected, editingContactID } = useSelector((state: any) => state.customers);
+  const { customerSelected, editingContactID, addingAnotherAddress } =
+    useSelector((state: any) => state.customers);
+
+  const [editingCustomer, setEditingCustomer] = useState<any>({});
 
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
@@ -56,13 +59,12 @@ export default function AddAddress() {
     element.innerHTML = "";
   };
 
-  const createCustomer = (e: React.FormEvent<HTMLFormElement>) => {
+  const addAddress = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData();
 
-    formData.append("companyID", customerSelected.CompanyID);
-    formData.append("contactID", customerSelected.ContactID);
+    formData.append("companyID", editingCustomer?.CompanyID);
 
     formData.append(
       "companyStreetAddress",
@@ -86,14 +88,27 @@ export default function AddAddress() {
       .then(function (response) {
         dispatch(updateWasRecordAdded(response.data));
         dispatch(finishedAddingContactOrAddress());
+        dispatch(closePanel());
       })
       .catch(function (response) {
         //handle error
         dispatch(finishedAddingContactOrAddress());
         dispatch(closePanel());
-        console.log(response);
       });
   };
+
+  useEffect(
+    function () {
+      if (addingAnotherAddress) {
+        setEditingCustomer({
+          CompanyID: customerSelected[0]?.CompanyID,
+          CompanyName: customerSelected[0]?.CompanyName,
+          CompanyEmployeeCount: customerSelected[0]?.CompanyEmployeeCount
+        });
+      } else setEditingCustomer(customerSelected[editingContactID?.index]);
+    },
+    [editingContactID]
+  );
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
@@ -102,7 +117,7 @@ export default function AddAddress() {
       <form
         ref={form}
         method="POST"
-        onSubmit={createCustomer}
+        onSubmit={addAddress}
         className="mt-6 flex flex-col gap-3"
       >
         <div className="grid gap-1">
@@ -114,7 +129,7 @@ export default function AddAddress() {
               required
               className="p-2 rounded-sm border"
               type="text"
-              defaultValue={customerSelected.CompanyName}
+              defaultValue={editingCustomer?.CompanyName}
               tabIndex={1}
               disabled
               name="companyName"
@@ -126,7 +141,7 @@ export default function AddAddress() {
               type="number"
               disabled
               tabIndex={2}
-              defaultValue={customerSelected.CompanyEmployeeCount}
+              defaultValue={editingCustomer?.CompanyEmployeeCount}
               name="companyEmployeeCount"
               placeholder="No of Employees"
             />
@@ -145,7 +160,7 @@ export default function AddAddress() {
               tabIndex={3}
               disabled
               name="contactName"
-              defaultValue={customerSelected.ContactName}
+              defaultValue={editingCustomer?.ContactName}
               placeholder="Contact Name"
             />
             <input
@@ -155,7 +170,7 @@ export default function AddAddress() {
               type="text"
               tabIndex={3}
               name="contactEmail"
-              defaultValue={customerSelected.ContactEmail}
+              defaultValue={editingCustomer?.ContactEmail}
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
@@ -176,9 +191,7 @@ export default function AddAddress() {
                     .map((code) =>
                       code.code === "US" ? null : (
                         <option
-                          defaultValue={
-                            customerSelected.ContactPhonePrefix
-                          }
+                          defaultValue={editingCustomer?.ContactPhonePrefix}
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
                         >
@@ -195,7 +208,7 @@ export default function AddAddress() {
                 tabIndex={6}
                 disabled
                 name="contactPhone"
-                defaultValue={customerSelected.ContactPhone}
+                defaultValue={editingCustomer?.ContactPhone}
                 placeholder="1234567890"
               />
             </div>

@@ -31,6 +31,8 @@ export const customerSlice = createSlice({
 
     finishedAddingContactOrAddress: (state) => {
       state.addingAnotherContact = false;
+      state.addingAnotherContact = false;
+      return state;
     },
 
     updateWasRecordAdded: (state, { payload }) => {

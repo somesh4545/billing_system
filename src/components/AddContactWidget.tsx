@@ -22,8 +22,13 @@ export default function AddContact() {
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
-  const createCustomer = (e: React.FormEvent<HTMLFormElement>) => {
+  const addContact = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!editingCustomer) {
+      alert("Please choose the Linking Address!")
+      return;
+    }
 
     const formData = new FormData();
 
@@ -66,7 +71,7 @@ export default function AddContact() {
       <form
         ref={form}
         method="POST"
-        onSubmit={createCustomer}
+        onSubmit={addContact}
         className="mt-6 flex flex-col gap-3"
       >
         <div className="grid gap-1">

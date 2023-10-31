@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setAddingAnotherAddress,
   setAddingAnotherContact,
   setEditingContactID,
 } from "../app/customer.slice";
@@ -10,8 +11,10 @@ export default function ContactFieldset() {
   const contactIDRef = useRef<number>();
   const { customerSelected } = useSelector((state: any) => state.customers);
 
-  function addContact(value) {
-    setEditingContactIDValue(value);
+  console.log(customerSelected);
+
+  function addContact() {
+    dispatch(setAddingAnotherAddress(false));
     dispatch(setAddingAnotherContact(true));
   }
 
@@ -27,7 +30,7 @@ export default function ContactFieldset() {
       <div className="bg-white rounded pt-3 p-4 h-full shadow-sm grid grid-rows-[1fr_auto] overflow-scroll">
         <div className="h-full flex gap-2 flex-col">
           {customerSelected.map((customer, _) => {
-            if (contactIDRef.current != customer.ContactID) {
+            if (contactIDRef.current != customer.ContactID && customer.ContactID != null) {
               contactIDRef.current = customer.ContactID;
 
               return (
@@ -35,25 +38,9 @@ export default function ContactFieldset() {
                   className="cursor-pointer border-b"
                   key={`${customer.ContactID}_${customer.ContactName}`}
                 >
-                  <summary className="flex gap-2 border-b pb-1 items-end justify-between">
-                    <div className="flex gap-2">
-                      <input type="checkbox" name="" id="" />
-                      <span>{customer.ContactName}</span>
-                    </div>
-
-                    <div className="flex justify-end h-max mt-2">
-                      <button
-                        onClick={() =>
-                          addContact({
-                            index: _,
-                            AddressID: customer.AddressID,
-                          })
-                        }
-                        className="bg-blue-200 p-1 rounded px-2.5 text-sm"
-                      >
-                        +
-                      </button>
-                    </div>
+                  <summary className="flex gap-2 border-b pb-1">
+                    <input type="checkbox" name="" id="" />
+                    <span>{customer.ContactName}</span>
                   </summary>
 
                   <div className="py-2 grid">
@@ -116,6 +103,15 @@ export default function ContactFieldset() {
               );
             }
           })}
+        </div>
+
+        <div className="flex justify-end h-max mt-2">
+          <button
+            onClick={addContact}
+            className="bg-blue-200 p-1 rounded px-2.5"
+          >
+            +
+          </button>
         </div>
       </div>
     </fieldset>
