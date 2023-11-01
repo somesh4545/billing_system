@@ -95,7 +95,7 @@ export default function ContactFieldset() {
     });
 
     setContacts(contactsComputed);
-  }, []);
+  }, [customerSelected]);
 
   return (
     <fieldset className="border p-4 pt-2 rounded max-h-[290px] border-gray-300 overflow-y-hidden">

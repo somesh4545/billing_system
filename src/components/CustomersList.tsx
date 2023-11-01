@@ -162,11 +162,11 @@ export default function CustomersList() {
           {customers.map((customer, _) => (
             <tr
               className="cursor-pointer"
-              key={customer[0].CompanyID}
+              key={customer.CompanyID}
               onClick={(e) => {
                 // @ts-ignore
                 if (!e.target.classList.contains("preventDefault")) {
-                  openCustomerDetails(customer, customer[0].CompanyID);
+                  openCustomerDetails(customer, _);
                 }
               }}
             >
