@@ -27,9 +27,14 @@ export const customerSlice = createSlice({
     },
 
     closePanel: (state) => {
+      state.addingAnotherAddress = false;
+      state.addingAnotherContact = false;
+      state.editingAddressID = null;
+      state.editingAddressID = null;
       state.customerSelected = null;
       state.isCustomerDetailsPanelOpen = false;
       state.isPanelOpen = false;
+      state.customerSelectedIndex = null;
       return state;
     },
 
