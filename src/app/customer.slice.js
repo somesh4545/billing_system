@@ -20,21 +20,24 @@ export const customerSlice = createSlice({
   initialState,
   reducers: {
     openPanel: (state) => {
-      state = initialState;
+      state.customerSelected = null;
+      state.isCustomerDetailsPanelOpen = false;
       state.isPanelOpen = true;
       return state;
     },
 
     closePanel: (state) => {
-      state = initialState;
+      state.customerSelected = null;
+      state.isCustomerDetailsPanelOpen = false;
+      state.isPanelOpen = false;
       return state;
     },
 
     finishedAddingContactOrAddress: (state) => {
-      state.editingAddressID = initialState.editingAddressID;
-      state.editingContactID = initialState.editingContactID;
-      state.addingAnotherContact = initialState.addingAnotherContact;
-      state.addingAnotherContact = initialState.addingAnotherContact;
+      state.addingAnotherContact = false;
+      state.addingAnotherContact = false;
+      state.editingAddressID = null;
+      state.editingContactID = null;
       return state;
     },
 
@@ -90,6 +93,8 @@ export const customerSlice = createSlice({
     },
 
     setEditingAddressID: (state, { payload }) => {
+      state.addingAnotherAddress = initialState.addingAnotherAddress;
+      state.addingAnotherContact = initialState.addingAnotherContact;
       state.editingAddressID = payload;
       return state;
     },
