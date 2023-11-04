@@ -102,7 +102,7 @@ export default function ContactFieldset() {
       <legend>
         <div className="px-2">List of Contacts</div>
       </legend>
-      <div className="bg-white rounded pt-3 p-4 h-full shadow-sm grid grid-rows-[1fr_auto] overflow-scroll">
+      <div className="bg-white rounded pt-3 p-4 h-full shadow-sm grid grid-rows-[1fr_auto] overflow-y-scroll">
         <div className="h-full flex gap-2 flex-col">
           {contacts.map((contact) => contact)}
         </div>

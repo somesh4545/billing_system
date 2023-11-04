@@ -19,6 +19,34 @@ const images = [
     scale: 2,
     activeSrc: "/svgs/services-light.icon.svg",
   },
+  {
+    link: "/invoices",
+    alt: "Invoices Icon",
+    src: "/svgs/invoice.icon.svg",
+    scale: 2,
+    activeSrc: "/svgs/invoice-light.icon.svg",
+  },
+  {
+    link: "/credit-note",
+    alt: "Credit Note Icon",
+    src: "/svgs/creditnote.icon.svg",
+    scale: 2,
+    activeSrc: "/svgs/creditnote-light.icon.svg",
+  },
+  {
+    link: "/feature-permission",
+    alt: "Feature Permission Icon",
+    src: "/svgs/permission.icon.svg",
+    scale: 2,
+    activeSrc: "/svgs/permission-light.icon.svg",
+  },
+  {
+    link: "/audit-log",
+    alt: "Audit Log Icon",
+    src: "/svgs/audit-log.icon.svg",
+    scale: 2,
+    activeSrc: "/svgs/audit-log-light.icon.svg",
+  },
 ];
 
 export default function Sidebar() {
@@ -30,8 +58,7 @@ export default function Sidebar() {
           onClick={() => (location.href = image.link)}
           className={
             "flex cursor-pointer items-center justify-center w-14 h-14 " +
-            (location.pathname == image.link ||
-            (location.pathname == "/" && _ == 0)
+            (location.pathname == image.link || (location.pathname == "/" && _ == 0)
               ? "bg-[#434343] rounded-2xl"
               : "")
           }
