@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import CustomersStatusWidget from "../components/CustomersStatusWidget";
 import CustomersBillingStatusWidget from "../components/CustomersBillingStatusWidget";
 import CustomersListHeadings from "../components/CustomersListHeadings";
@@ -14,7 +14,7 @@ import ContactsList from "../components/ContactsList";
 import UpdateCustomer from "../components/UpdateCustomerWidget";
 import AddContact from "../components/AddContactWidget";
 import AddAddress from "../components/AddAddressWidget";
-import AddAddressAndContact from "../components/AddAddressAndContact";
+import UpdateAddressWidget from "../components/UpdateAddressWidget";
 
 export default function Customers() {
   const dispatch = useDispatch();
@@ -80,9 +80,7 @@ export default function Customers() {
               )}
             {addingAnotherContact && !addingAnotherAddress && <AddContact />}
             {!addingAnotherContact && addingAnotherAddress && <AddAddress />}
-            {addingAnotherContact && addingAnotherAddress && (
-              <AddAddressAndContact />
-            )}
+            {!!editingAddressID && <UpdateAddressWidget />}
           </div>
         </div>
       </div>

@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  finishedAddingContactOrAddress,
   setAddingAnotherAddress,
   setAddingAnotherContact,
+  setEditingAddressID,
   setEditingContactID,
 } from "../app/customer.slice";
 
@@ -11,11 +13,13 @@ export default function AddressFieldset() {
   const addressIDRef = useRef<number>();
 
   const [addresses, setAddresses] = useState([]);
-  const { customerSelected, addingAnotherContact } = useSelector(
+  const { customerSelected, addingAnotherContact, editingAddressID } = useSelector(
     (state: any) => state.customers
   );
 
   const chooseAddress = function (index, addressID) {
+    dispatch(finishedAddingContactOrAddress());
+
     addingAnotherContact
       ? dispatch(
           setEditingContactID({
@@ -23,8 +27,11 @@ export default function AddressFieldset() {
             AddressID: addressID,
           })
         )
-      : console.log(
-          "Please Update the address using the contacts linked to this address."
+      : dispatch(
+          setEditingAddressID({
+            index: index,
+            AddressID: addressID,
+          })
         );
   };
 
@@ -63,13 +70,11 @@ export default function AddressFieldset() {
         }
       });
 
+      addressIDRef.current = undefined;
+      console.log(addresses)
       setAddresses(addresses);
-
-      return () => {
-        addressIDRef.current = undefined;
-      };
     },
-    [addingAnotherContact]
+    [addingAnotherContact, editingAddressID, customerSelected]
   );
 
   function addAddress() {

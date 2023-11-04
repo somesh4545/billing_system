@@ -5,73 +5,128 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   closePanel,
   finishedAddingContactOrAddress,
+  setAddingAnotherAddress,
   updateWasRecordAdded,
 } from "../app/customer.slice";
 
-export default function AddContact() {
+export default function UpdateAddressWidget() {
   const dispatch = useDispatch();
+  const {
+    customerSelected,
+    editingAddressID,
+    addingAnotherAddress,
+    customerSelectedIndex,
+  } = useSelector((state: any) => state.customers);
 
   const [editingCustomer, setEditingCustomer] = useState<any>({});
-
-  const { customerSelected, editingContactID, customerSelectedIndex } = useSelector(
-    (state: any) => state.customers
-  );
 
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
-  const addContact = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleZipCodeChange = (e: any) => {
+    const inputValue = e.target.value;
+    const element = zipCodeError.current as HTMLParagraphElement;
 
-    if (!editingCustomer) {
-      alert("Please choose the Linking Address!")
+    // Is numberic
+    if (
+      /\d/gm.test(inputValue) &&
+      (/-/gm.test(inputValue) || !/\D/.test(inputValue))
+    ) {
+      if (/-/gm.test(inputValue)) {
+        inputValue.length != 10
+          ? (element.innerHTML =
+              "<div class='pt-1'>The ZIP code must be in the format 00000-0000.</div>")
+          : (element.innerHTML = "");
+
+        return;
+      }
+
+      inputValue.length != 5
+        ? (element.innerHTML =
+            "<div class='pt-1'>The ZIP code must be in the format 00000.</div>")
+        : (element.innerHTML = "");
+
       return;
     }
+
+    // Input is alphanumeric
+    if (/\w/gm.test(inputValue)) {
+      inputValue.length != 10
+        ? (element.innerHTML =
+            "<div class='pt-1'>The ZIP code must be alphanumeric and consist of exactly 10 characters.</div>")
+        : (element.innerHTML = "");
+
+      return;
+    }
+
+    element.innerHTML = "";
+  };
+
+  const UpdateAddress = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     const formData = new FormData();
 
     formData.append("addressID", editingCustomer?.AddressID);
-    formData.append("companyID", editingCustomer?.CompanyID);
 
-    formData.append("contactName", form.current?.contactName.value);
-    formData.append("contactEmail", form.current?.contactEmail.value);
     formData.append(
-      "contactPhonePrefix",
-      form.current?.contactPhonePrefix.value
+      "companyStreetAddress",
+      form.current?.companyStreetAddress.value
     );
-    formData.append("contactPhone", form.current?.contactPhone.value);
+    formData.append("companyCity", form.current?.companyCity.value);
+    formData.append("companyStateCode", form.current?.companyStateCode.value);
+    formData.append("companyZipCode", form.current?.companyZipCode.value);
+    formData.append(
+      "companyAddressPrimary",
+      form.current?.companyAddressPrimary.value
+    );
+    formData.append("companyAddressHQ", form.current?.companyAddressHQ.value);
 
     axios({
       method: "POST",
       data: formData,
-      url: `${apiBaseURL}/api/customers/addContact`,
+      url: `${apiBaseURL}/api/customers/update`,
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(function (response) {
         dispatch(updateWasRecordAdded(Math.random() * 10e6));
         dispatch(finishedAddingContactOrAddress());
+        dispatch(setAddingAnotherAddress(false));
       })
       .catch(function (response) {
         //handle error
         dispatch(finishedAddingContactOrAddress());
+        dispatch(setAddingAnotherAddress(false));
         dispatch(closePanel());
       });
   };
 
-  useEffect(function () {
-    setEditingCustomer(customerSelected[(editingContactID?.index) ?? customerSelectedIndex]);
-  }, [editingContactID]);
+  useEffect(
+    function () {
+      if (addingAnotherAddress) {
+        setEditingCustomer({
+          CompanyID: customerSelected[0]?.CompanyID,
+          CompanyName: customerSelected[0]?.CompanyName,
+          CompanyEmployeeCount: customerSelected[0]?.CompanyEmployeeCount,
+        });
+      } else
+        setEditingCustomer(
+          customerSelected[editingAddressID?.index ?? customerSelectedIndex]
+        );
+    },
+    [editingAddressID]
+  );
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
-      <h2>Add Another Details</h2>
+      <h2>Update Address</h2>
 
       <form
         ref={form}
         method="POST"
-        onSubmit={addContact}
+        onSubmit={UpdateAddress}
         className="mt-6 flex flex-col gap-3"
       >
         <div className="grid gap-1">
@@ -112,21 +167,26 @@ export default function AddContact() {
               className="p-2 rounded-sm border"
               type="text"
               tabIndex={3}
+              disabled
               name="contactName"
+              defaultValue={editingCustomer?.ContactName}
               placeholder="Contact Name"
             />
             <input
               required
               className="p-2 rounded-sm border"
+              disabled
               type="text"
               tabIndex={3}
               name="contactEmail"
+              defaultValue={editingCustomer?.ContactEmail}
               placeholder="Contact Email"
             />
             <div className="w-full grid grid-cols-[auto_1fr] gap-2">
               <div className="pr-2 bg-white w-full border rounded-sm">
                 <select
                   tabIndex={5}
+                  disabled
                   name="contactPhonePrefix"
                   className="font-mono w-full p-2.5 cursor-pointer"
                 >
@@ -140,6 +200,7 @@ export default function AddContact() {
                     .map((code) =>
                       code.code === "US" ? null : (
                         <option
+                          defaultValue={editingCustomer?.ContactPhonePrefix}
                           key={code.code}
                           value={code.dial_code.replace("+", "")}
                         >
@@ -154,7 +215,9 @@ export default function AddContact() {
                 className="p-2 rounded-sm border"
                 type="number"
                 tabIndex={6}
+                disabled
                 name="contactPhone"
+                defaultValue={editingCustomer?.ContactPhone}
                 placeholder="1234567890"
               />
             </div>
@@ -166,15 +229,12 @@ export default function AddContact() {
             className="text-[#888] flex justify-between"
             htmlFor="companyName"
           >
-            <div>Add Address</div>
+            <div>Update Address</div>
             <div className="flex justify-center gap-3 text-xs">
               <div className="flex items-center gap-0.5">
                 <input
                   type="checkbox"
-                  disabled
-                  defaultChecked={
-                    editingCustomer?.CompanyAddressPrimary == "on"
-                  }
+                  defaultChecked={editingCustomer.CompanyAddressPrimary == "on"}
                   name="companyAddressPrimary"
                   id=""
                 />
@@ -183,8 +243,8 @@ export default function AddContact() {
               <div className="flex items-center gap-0.5">
                 <input
                   type="checkbox"
+                  defaultChecked={editingCustomer.CompanyAddressHQ == "on"}
                   name="companyAddressHQ"
-                  defaultChecked={editingCustomer?.CompanyAddressHQ == "on"}
                   id=""
                 />
                 <span>HQ</span>
@@ -196,20 +256,18 @@ export default function AddContact() {
               required
               className="p-2 rounded-sm border"
               type="text"
-              disabled
               tabIndex={7}
               name="companyStreetAddress"
+              defaultValue={editingCustomer.CompanyStreetAddress}
               placeholder="Street Name"
-              defaultValue={editingCustomer?.CompanyStreetAddress}
             />
             <input
               required
               className="p-2 rounded-sm border"
               type="text"
               tabIndex={8}
-              disabled
               name="companyCity"
-              defaultValue={editingCustomer?.CompanyCity}
+              defaultValue={editingCustomer.CompanyCity}
               placeholder="City"
             />
             <div className="w-full">
@@ -217,10 +275,10 @@ export default function AddContact() {
                 required
                 className="p-2 rounded-sm border w-full"
                 type="text"
-                defaultValue={editingCustomer?.CompanyZipCode}
                 tabIndex={9}
-                disabled
                 name="companyZipCode"
+                defaultValue={editingCustomer.CompanyZipCode}
+                onChange={handleZipCodeChange}
                 placeholder="ZIP Code"
               />
               <p className="text-xs text-rose-800" ref={zipCodeError}></p>
@@ -230,10 +288,9 @@ export default function AddContact() {
               className="p-2 rounded-sm border"
               type="text"
               tabIndex={10}
-              disabled
+              defaultValue={editingCustomer.CompanyStateCode}
               name="companyStateCode"
               placeholder="State – 03"
-              defaultValue={editingCustomer?.CompanyStateCode}
             />
           </div>
         </div>

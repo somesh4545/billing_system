@@ -1,37 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  searchValue: null,
+  isPanelOpen: false,
+  openFilters: false,
+  wasRecordAdded: null,
+  customerSelected: null,
+  addingAnotherContact: false,
+  addingAnotherAddress: false,
+  customerSelectedIndex: null,
+  editingAddressID: null,
+  editingContactID: null,
+  isCustomerDetailsPanelOpen: false,
+  loadedCustomers: [],
+};
+
 export const customerSlice = createSlice({
   name: "customers",
-  initialState: {
-    searchValue: null,
-    isPanelOpen: false,
-    openFilters: false,
-    wasRecordAdded: null,
-    customerSelected: null,
-    addingAnotherContact: false,
-    addingAnotherAddress: false,
-    customerSelectedIndex: null,
-    isCustomerDetailsPanelOpen: false,
-    loadedCustomers: [],
-  },
+  initialState,
   reducers: {
     openPanel: (state) => {
-      state.customerSelected = null;
-      state.isCustomerDetailsPanelOpen = false;
+      state = initialState;
       state.isPanelOpen = true;
       return state;
     },
 
     closePanel: (state) => {
-      state.customerSelected = null;
-      state.isCustomerDetailsPanelOpen = false;
-      state.isPanelOpen = false;
+      state = initialState;
       return state;
     },
 
     finishedAddingContactOrAddress: (state) => {
-      state.addingAnotherContact = false;
-      state.addingAnotherContact = false;
+      state.editingAddressID = initialState.editingAddressID;
+      state.editingContactID = initialState.editingContactID;
+      state.addingAnotherContact = initialState.addingAnotherContact;
+      state.addingAnotherContact = initialState.addingAnotherContact;
       return state;
     },
 
@@ -80,6 +83,8 @@ export const customerSlice = createSlice({
     },
 
     setEditingContactID: (state, { payload }) => {
+      state.addingAnotherAddress = initialState.addingAnotherAddress;
+      state.addingAnotherContact = initialState.addingAnotherContact;
       state.editingContactID = payload;
       return state;
     },
@@ -87,7 +92,7 @@ export const customerSlice = createSlice({
     setEditingAddressID: (state, { payload }) => {
       state.editingAddressID = payload;
       return state;
-    }   
+    },
   },
 });
 
@@ -106,7 +111,7 @@ export const {
   setOpenFilters,
   setAddingAnotherAddress,
   setEditingAddressID,
-  setEditingContactID
+  setEditingContactID,
 } = customerSlice.actions;
 
 export default customerSlice.reducer;

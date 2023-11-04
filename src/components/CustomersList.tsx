@@ -22,6 +22,7 @@ export default function CustomersList() {
     wasRecordAdded,
     isCustomerDetailsPanelOpen,
     searchValue,
+    customerSelectedIndex,
     loadedCustomers,
   } = useSelector((state: any) => state.customers);
 
@@ -29,13 +30,14 @@ export default function CustomersList() {
     const request = axios.get(`${apiBaseURL}/api/customers/list`);
     const { data } = await request;
 
+    console.log(data);
+
     if (data?.status == true) {
       const companies: any = {};
       let currentID: number | null = null;
 
       data.results.map((result: Company) => {
-        if (result.CompanyID != currentID)
-          currentID = result.CompanyID;
+        if (result.CompanyID != currentID) currentID = result.CompanyID;
 
         if (result.CompanyID == currentID) {
           if (companies[currentID] == undefined) {
@@ -46,10 +48,14 @@ export default function CustomersList() {
         }
       });
 
-      console.log(companies);
+      const companiesValue: any = Object.values(companies);
 
-      setCustomers(Object.values(companies));
-      dispatch(setLoadedCustomers(Object.values(companies)));
+      setCustomers(companiesValue);
+      dispatch(setLoadedCustomers(companiesValue));
+
+      if (customerSelectedIndex >= 0) {
+        dispatch(setSelectedCustomer(companiesValue[customerSelectedIndex]));
+      }
     }
   };
 
@@ -134,6 +140,7 @@ export default function CustomersList() {
   return (
     <>
       <table
+        aria-label={wasRecordAdded}
         className={
           "text-sm customer-list h-max " +
           (isPanelOpen || isCustomerDetailsPanelOpen ? "w-max" : "w-full")
