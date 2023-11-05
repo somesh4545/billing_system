@@ -1,69 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoadedCustomers } from "../app/customer.slice";
 export default function Services() {
+  const dispatch = useDispatch();
+  // @ts-ignore
+  const apiBaseURL = import.meta.env.VITE_API_BASEURL;
+
+  const { loadedCustomers } = useSelector((state: any) => state.customers);
+
   const [checked, setChecked] = useState(false);
-  const records = [
-    {
-      serviceName: "Service 1",
-      unit: 56,
-      price: 4432,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 2",
-      unit: 76,
-      price: 5884,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 3",
-      unit: 46,
-      price: 6577,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 4",
-      unit: 47,
-      price: 5657,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 5",
-      unit: 37,
-      price: 56546,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 6",
-      unit: 84,
-      price: 56,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 7",
-      unit: 46,
-      price: 545,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 8",
-      unit: 87,
-      price: 6456,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 9",
-      unit: 66,
-      price: 5446,
-      status: "Active",
-    },
-    {
-      serviceName: "Service 10",
-      unit: 64,
-      price: 546,
-      status: "Active",
-    },
-  ];
+  const [Services, setServices] = useState<any>([]);
 
   const handleAddService = () => {
     const service_header = document.getElementById("service_header");
@@ -117,6 +65,62 @@ export default function Services() {
       }
     }
   };
+
+  const getServices = async function () {
+    try {
+      const request = axios.get(`${apiBaseURL}/api/services/list`);
+      const { data } = await request;
+
+      if (data?.services) {
+        setServices(data.services);
+      }
+    } catch (e) {
+      console.log(`Cannot Get Services: ${e.message}`);
+    }
+  };
+
+  const getCustomers = async function () {
+    try {
+      const request = axios.get(`${apiBaseURL}/api/customers/list`);
+      const { data } = await request;
+
+      if (data?.status == true) {
+        const companies: any = {};
+        let currentID: number | string = "";
+
+        data.results.map((result) => {
+          if (result.CompanyID != currentID) currentID = result.CompanyID;
+
+          if (result.CompanyID == currentID) {
+            if (companies[currentID] == undefined) {
+              companies[currentID] = [result];
+            } else {
+              companies[currentID].push(result);
+            }
+          }
+        });
+
+        const companiesValue: any = Object.values(companies);
+
+        dispatch(setLoadedCustomers(companiesValue));
+      }
+    } catch (e) {
+      console.log(`Cannot Get Customers: ${e.message}`);
+    }
+  };
+
+  const saveService = async function () {
+    try {
+      // const request = axios.post(`${}`)
+    } catch (e) {
+
+    }
+  }
+
+  useEffect(function () {
+    getCustomers();
+    getServices();
+  }, []);
 
   return (
     <div className="p-4">
@@ -298,7 +302,7 @@ export default function Services() {
                 </tr>
               </thead>
               <tbody>
-                {records.map((record, i) => {
+                {Services.map((record, i) => {
                   return (
                     <tr key={i}>
                       <td className="py-3">
@@ -409,48 +413,11 @@ export default function Services() {
                 checked ? "block" : "hidden "
               } specific_customer_wrapper space-y-5 mt-5`}
             >
-              <span
-                id="customer_1"
-                onClick={(e) => handleSelectedCustopmer(e, 1)}
-                className="block w-max cursor-pointer text-base text-[#8b8d97]"
-              >
-                Vr Logistics
-              </span>
-              <span
-                id="customer_2"
-                onClick={(e) => handleSelectedCustopmer(e, 2)}
-                className="block w-max cursor-pointer text-base text-[#8b8d97]"
-              >
-                Tommy Exporters
-              </span>
-              <span
-                id="customer_3"
-                onClick={(e) => handleSelectedCustopmer(e, 3)}
-                className="block w-max cursor-pointer text-base text-[#8b8d97]"
-              >
-                Denver Ports
-              </span>
-              <span
-                id="customer_4"
-                onClick={(e) => handleSelectedCustopmer(e, 4)}
-                className="block w-max cursor-pointer text-base text-[#8b8d97]"
-              >
-                Tim Washington
-              </span>
-              <span
-                id="customer_5"
-                onClick={(e) => handleSelectedCustopmer(e, 5)}
-                className="block w-max cursor-pointer text-base text-[#8b8d97]"
-              >
-                Washington Ltd.
-              </span>
-              <span
-                id="customer_6"
-                onClick={(e) => handleSelectedCustopmer(e, 6)}
-                className="block w-max cursor-pointer text-base text-[#8b8d97]"
-              >
-                Dornan Pvt Ltd
-              </span>
+              {loadedCustomers.map(customer => (
+                <span id={`customer_${customer[0].LinkerID}`} onClick={(e) => handleSelectedCustopmer(e, customer[0].LinkerID)} key={customer[0].LinkerID}>
+                  {customer[0].CompanyName}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -461,7 +428,7 @@ export default function Services() {
             >
               Cancel
             </button>
-            <button className="border border-[#000] rounded-[10px] text-[#fff] bg-[#267cff] text-[20px] px-14 py-3">
+            <button onClick={saveService} className="border border-[#000] rounded-[10px] text-[#fff] bg-[#267cff] text-[20px] px-14 py-3">
               Save
             </button>
           </div>

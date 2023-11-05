@@ -30,8 +30,6 @@ export default function CustomersList() {
     const request = axios.get(`${apiBaseURL}/api/customers/list`);
     const { data } = await request;
 
-    console.log(data);
-
     if (data?.status == true) {
       const companies: any = {};
       let currentID: number | null = null;
