@@ -1,11 +1,17 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 export default function CustomersBillingStatusWidget() {
+  const { loadedCustomers } = useSelector((state: any) => state.customers);
+
   return (
     <div className="bg-white rounded-xl p-4">
       <div className="flex justify-between">
         <div className="w-9 h-9 bg-[#424242] rounded-lg grid place-items-center">
-          <img src="/svgs/customers-billing-status-widget.icon.svg" alt="Customer Icon" />
+          <img
+            src="/svgs/customers-billing-status-widget.icon.svg"
+            alt="Customer Icon"
+          />
         </div>
 
         <select className="text-xs">
@@ -27,11 +33,11 @@ export default function CustomersBillingStatusWidget() {
           <tbody className="text-lg">
             <tr>
               <td>
-                <span>20</span>
-                <span className="text-xs ml-2 text-[#888888]">+20.00%</span>
+                <span>{loadedCustomers.length}</span>
+                <span className="text-xs ml-2 text-[#888888]">+100.00%</span>
               </td>
               <td>
-                <span>657</span>
+                <span>{loadedCustomers.length * Math.round(Math.random() * 99)}</span>
                 <span className="text-xs ml-2 text-[#888888]"></span>
               </td>
             </tr>

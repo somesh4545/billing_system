@@ -140,7 +140,7 @@ export default function CustomersList() {
       <table
         aria-label={wasRecordAdded}
         className={
-          "text-sm customer-list h-max " +
+          "text-sm border h-max " +
           (isPanelOpen || isCustomerDetailsPanelOpen ? "w-max" : "w-full")
         }
       >

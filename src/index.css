@@ -18,12 +18,14 @@ a {
 }
 
 @layer base {
-  table.customer-list,
-  table.customer-list td {
+  table.border,
+  table.border td,
+  table.border th {
     border: 1px solid #ddd;
   }
 
-  table.customer-list td {
+  table.border td,
+  table.border th {
     padding: 10px;
   }
 
@@ -34,8 +36,8 @@ a {
     place-items: center;
   }
 
-  table.customer-list tr td.no-b-top,
-  table.customer-list tbody tr td:nth-last-child(1) {
+  table.border.grd tr td.no-b-top,
+  table.border.grd tbody tr td:nth-last-child(1) {
     display: grid;
     border-width: 0px;
     place-items: center;
