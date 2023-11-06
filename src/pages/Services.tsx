@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Pagination from "../components/Pagination";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoadedCustomers } from "../app/customer.slice";
@@ -15,11 +14,29 @@ export default function Services() {
   const [Services, setServices] = useState<any>([]);
   const [updateID, setUpdateID] = useState(0);
 
+  const [isUpdatingRecord, setIsUpdatingRecord] = useState(false);
+  const [updatingRecord, setUpdatingRecord] = useState<number | null>(null);
+
   const handleAddService = () => {
+    setUpdatingRecord(null);
+    setIsUpdatingRecord(false);
+
     const service_header = document.getElementById("service_header");
     service_header?.classList.add("hidden");
     const table_wrapper = document.getElementById("table_wrapper");
     const form_wrapper = document.getElementById("form_wrapper");
+    table_wrapper?.classList.replace("w-full", "w-1/2");
+    form_wrapper?.classList.replace("hidden", "w-1/2");
+  };
+
+  const handleUpdateService = (idx: number) => {
+    setUpdatingRecord(idx);
+    setIsUpdatingRecord(true);
+
+    const service_header = document.getElementById("service_header");
+    const table_wrapper = document.getElementById("table_wrapper");
+    const form_wrapper = document.getElementById("form_wrapper");
+    service_header?.classList.add("hidden");
     table_wrapper?.classList.replace("w-full", "w-1/2");
     form_wrapper?.classList.replace("hidden", "w-1/2");
   };
@@ -160,8 +177,23 @@ export default function Services() {
 
       formData.append("customer", ids.join(","));
 
-      const request = axios.post(`${apiBaseURL}/api/services/create`, formData);
-      await request;
+      if (updatingRecord == null) {
+        const request = axios.post(
+          `${apiBaseURL}/api/services/create`,
+          formData
+        );
+        await request;
+      } else {
+        formData.append(
+          "ServiceTransaction",
+          Services[updatingRecord][0]?.ServiceTransaction
+        );
+        const request = axios.post(
+          `${apiBaseURL}/api/services/update`,
+          formData
+        );
+        await request;
+      }
 
       setUpdateID((id) => id + 1);
     } catch (e) {
@@ -373,7 +405,11 @@ export default function Services() {
               <tbody>
                 {Services.map((record, i) => {
                   return (
-                    <tr key={i}>
+                    <tr
+                      className="cursor-pointer"
+                      key={i}
+                      onClick={() => handleUpdateService(i)}
+                    >
                       <td className="py-3">
                         <div className="dead-center">
                           <label className="custom_checkbox">
@@ -429,7 +465,9 @@ export default function Services() {
         >
           <form onSubmit={(e) => e.preventDefault()} ref={formRef}>
             <div className="flex justify-between items-center mb-8">
-              <h4 className="text-[20px] text-black font-medium">Add</h4>
+              <h4 className="text-[20px] text-black font-medium">
+                {isUpdatingRecord ? "Update" : "Add"}
+              </h4>
               <img
                 width={32}
                 height={32}
@@ -440,18 +478,30 @@ export default function Services() {
               />
             </div>
 
-            <div className="text-base text-[#8b8d97] pb-3">Add Information</div>
+            <div className="text-base text-[#8b8d97] pb-3">
+              {isUpdatingRecord ? "Update" : "Add"} Information
+            </div>
             <div className="space-y-6">
               <input
                 className="w-full bg-[#eff1f999] px-4 py-4 rounded-lg focus-visible:outline-none"
                 type="text"
-                placeholder="Service Name"
                 name="ServiceName"
+                defaultValue={
+                  updatingRecord != null
+                    ? Services[updatingRecord][0]?.ServiceName
+                    : ""
+                }
+                placeholder="Service Name"
               />
               <input
                 className="w-full bg-[#eff1f999] px-4 py-4 rounded-lg focus-visible:outline-none"
                 type="text"
                 name="ServiceUnit"
+                defaultValue={
+                  updatingRecord != null
+                    ? Services[updatingRecord][0]?.ServiceUnit
+                    : ""
+                }
                 placeholder="Unit"
               />
               <input
@@ -459,6 +509,11 @@ export default function Services() {
                 type="text"
                 name="ServicePrice"
                 placeholder="Price"
+                defaultValue={
+                  updatingRecord != null
+                    ? Services[updatingRecord][0]?.ServiceValue
+                    : ""
+                }
               />
             </div>
             <div className="flex gap-5 mt-6">
@@ -469,8 +524,16 @@ export default function Services() {
                 <input
                   id="specific_customer_checkbox"
                   className="group specific_customer_checkbox"
+                  defaultChecked={
+                    updatingRecord != null
+                      ? Services[updatingRecord][0]?.ServiceCompanyID != null
+                      : false
+                  }
                   name="specific_customer_checkbox"
                   type="checkbox"
+                  onChange={() => {
+                    checked ? setChecked(false) : setChecked(true);
+                  }}
                   onClick={() => {
                     checked ? setChecked(false) : setChecked(true);
                   }}
@@ -482,22 +545,42 @@ export default function Services() {
             <div className="min-h-[300px]">
               <div
                 className={`${
-                  checked ? "block" : "hidden "
+                  checked ||
+                  (updatingRecord &&
+                    Services[updatingRecord][0]?.ServiceCompanyID != null &&
+                    isUpdatingRecord)
+                    ? "block"
+                    : "hidden "
                 } specific_customer_wrapper space-y-5 mt-5`}
               >
-                {loadedCustomers.map((customer) => (
-                  <div
-                    className="customer"
-                    data-id={customer[0].CompanyID}
-                    id={`customer_${customer[0].LinkerID}`}
-                    onClick={(e) =>
-                      handleSelectedCustopmer(e, customer[0].LinkerID)
+                {loadedCustomers.map((customer) => {
+                  let isSelected = false;
+
+                  if (updatingRecord) {
+                    const isSelectedCustomer = Services[updatingRecord].find(
+                      (record) =>
+                        record.ServiceCompanyID == customer[0].CompanyID
+                    );
+
+                    if (isSelectedCustomer != undefined) {
+                      isSelected = true;
                     }
-                    key={customer[0].LinkerID}
-                  >
-                    {customer[0].CompanyName}
-                  </div>
-                ))}
+                  }
+
+                  return (
+                    <div
+                      className={"customer " + (isSelected ? "selected" : "")}
+                      data-id={customer[0].CompanyID}
+                      id={`customer_${customer[0].LinkerID}`}
+                      onClick={(e) =>
+                        handleSelectedCustopmer(e, customer[0].LinkerID)
+                      }
+                      key={customer[0].LinkerID}
+                    >
+                      {customer[0].CompanyName}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
