@@ -164,6 +164,13 @@ export default function CustomersList() {
           </tr>
         </thead>
         <tbody className="text-[#666]">
+          {customers.length < 1 && (
+            <tr>
+              <td></td>
+              <td>No records found.</td>
+            </tr>
+          )}
+
           {customers.map((customer, _) => (
             <tr
               className="cursor-pointer"

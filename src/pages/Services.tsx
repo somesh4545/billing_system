@@ -403,6 +403,12 @@ export default function Services() {
                 </tr>
               </thead>
               <tbody>
+                {Services.length < 1 && (
+                  <tr>
+                    <td></td>
+                    <td>No records found.</td>
+                  </tr>
+                )}
                 {Services.map((record, i) => {
                   return (
                     <tr
