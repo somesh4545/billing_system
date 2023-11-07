@@ -37,7 +37,7 @@ export default function CustomersBillingStatusWidget() {
                 <span className="text-xs ml-2 text-[#888888]">+100.00%</span>
               </td>
               <td>
-                <span>{loadedCustomers.length * Math.round(Math.random() * 99)}</span>
+                <span>0</span>
                 <span className="text-xs ml-2 text-[#888888]"></span>
               </td>
             </tr>

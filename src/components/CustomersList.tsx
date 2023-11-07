@@ -75,43 +75,44 @@ export default function CustomersList() {
     return term.toString().toLowerCase().search(search) > -1;
   };
 
-  const filterCustomers = (
-    customers: Company[],
-    searchExpression
-  ): Company[] => {
-    return customers.filter((company) => {
-      if (searchMacro(company.CompanyName, searchExpression)) {
-        return true;
-      }
-
-      if (company) {
-        if (searchMacro(company.ContactEmail, searchExpression)) {
+  const filterCustomers = (customers: any[], searchExpression): Company[] => {
+    const updated_list = customers.map((companyArray) => {
+      const arr = companyArray.filter((company) => {
+        if (searchMacro(company.CompanyName, searchExpression)) {
           return true;
         }
 
-        if (searchMacro(company.ContactName, searchExpression)) {
-          return true;
-        }
+        if (company) {
+          if (searchMacro(company.ContactEmail, searchExpression)) {
+            return true;
+          }
 
-        if (searchMacro(company.ContactPhone, searchExpression)) {
-          return true;
-        }
+          if (searchMacro(company.ContactName, searchExpression)) {
+            return true;
+          }
 
-        if (searchMacro(company.CompanyCity, searchExpression)) {
-          return true;
-        }
+          if (searchMacro(company.ContactPhone, searchExpression)) {
+            return true;
+          }
 
-        if (searchMacro(company.CompanyStreetAddress, searchExpression)) {
-          return true;
-        }
+          if (searchMacro(company.CompanyCity, searchExpression)) {
+            return true;
+          }
 
-        if (searchMacro(company.CompanyZipCode, searchExpression)) {
-          return true;
-        }
-      }
+          if (searchMacro(company.CompanyStreetAddress, searchExpression)) {
+            return true;
+          }
 
-      return false;
+          if (searchMacro(company.CompanyZipCode, searchExpression)) {
+            return true;
+          }
+        }
+      });
+
+      return arr;
     });
+
+    return updated_list.filter((items) => items.length > 0);
   };
 
   useEffect(
@@ -128,7 +129,14 @@ export default function CustomersList() {
         return;
       }
 
-      const searchExpression = new RegExp(searchValue.toLowerCase(), "gm");
+      if (/\W/.test(searchValue)) {
+        alert("You can only search for alphanumeric values.");
+      }
+
+      const searchExpression = new RegExp(
+        searchValue.replace(/\W/gm, "").toLowerCase(),
+        "gm"
+      );
 
       setCustomers(filterCustomers(loadedCustomers, searchExpression));
     },
