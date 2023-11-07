@@ -71,11 +71,17 @@ export const customerSlice = createSlice({
     },
 
     setAddingAnotherContact: (state, { payload }) => {
+      state.editingAddressID = initialState.editingAddressID;
+      state.editingContactID = initialState.editingContactID;
+      state.addingAnotherAddress = initialState.addingAnotherAddress;
       state.addingAnotherContact = payload;
       return state;
     },
 
     setAddingAnotherAddress: (state, { payload }) => {
+      state.editingAddressID = initialState.editingAddressID;
+      state.editingContactID = initialState.editingContactID;
+      state.addingAnotherContact = initialState.addingAnotherAddress;
       state.addingAnotherAddress = payload;
       return state;
     },
@@ -93,6 +99,7 @@ export const customerSlice = createSlice({
     setEditingContactID: (state, { payload }) => {
       state.addingAnotherAddress = initialState.addingAnotherAddress;
       state.addingAnotherContact = initialState.addingAnotherContact;
+      state.editingAddressID = initialState.editingAddressID;
       state.editingContactID = payload;
       return state;
     },
@@ -100,6 +107,7 @@ export const customerSlice = createSlice({
     setEditingAddressID: (state, { payload }) => {
       state.addingAnotherAddress = initialState.addingAnotherAddress;
       state.addingAnotherContact = initialState.addingAnotherContact;
+      state.editingContactID = initialState.editingContactID;
       state.editingAddressID = payload;
       return state;
     },
