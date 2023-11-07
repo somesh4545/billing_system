@@ -30,6 +30,7 @@ export default function Services() {
   };
 
   const handleUpdateService = (idx: number) => {
+    handleCancelForm({ preventDefault: () => {} });
     setUpdatingRecord(idx);
     setIsUpdatingRecord(true);
 
@@ -195,6 +196,7 @@ export default function Services() {
         await request;
       }
 
+      handleCancelForm({ preventDefault: () => {} });
       setUpdateID((id) => id + 1);
     } catch (e) {
       console.log(`Cannot Save Services: ${e.message}`);
@@ -492,7 +494,7 @@ export default function Services() {
                 className="w-full bg-[#eff1f999] px-4 py-4 rounded-lg focus-visible:outline-none"
                 type="text"
                 name="ServiceName"
-                defaultValue={
+                value={
                   updatingRecord != null
                     ? Services[updatingRecord][0]?.ServiceName
                     : ""
@@ -503,7 +505,7 @@ export default function Services() {
                 className="w-full bg-[#eff1f999] px-4 py-4 rounded-lg focus-visible:outline-none"
                 type="text"
                 name="ServiceUnit"
-                defaultValue={
+                value={
                   updatingRecord != null
                     ? Services[updatingRecord][0]?.ServiceUnit
                     : ""
@@ -515,7 +517,7 @@ export default function Services() {
                 type="text"
                 name="ServicePrice"
                 placeholder="Price"
-                defaultValue={
+                value={
                   updatingRecord != null
                     ? Services[updatingRecord][0]?.ServiceValue
                     : ""
