@@ -25,6 +25,9 @@ export default function Services() {
     service_header?.classList.add("hidden");
     const table_wrapper = document.getElementById("table_wrapper");
     const form_wrapper = document.getElementById("form_wrapper");
+    const form = form_wrapper?.querySelector("form");
+
+    form?.reset();
     table_wrapper?.classList.replace("w-full", "w-1/2");
     form_wrapper?.classList.replace("hidden", "w-1/2");
   };
@@ -37,6 +40,9 @@ export default function Services() {
     const service_header = document.getElementById("service_header");
     const table_wrapper = document.getElementById("table_wrapper");
     const form_wrapper = document.getElementById("form_wrapper");
+    const form = form_wrapper?.querySelector("form");
+
+    form?.reset();
     service_header?.classList.add("hidden");
     table_wrapper?.classList.replace("w-full", "w-1/2");
     form_wrapper?.classList.replace("hidden", "w-1/2");
@@ -494,7 +500,7 @@ export default function Services() {
                 className="w-full bg-[#eff1f999] px-4 py-4 rounded-lg focus-visible:outline-none"
                 type="text"
                 name="ServiceName"
-                value={
+                defaultValue={
                   updatingRecord != null
                     ? Services[updatingRecord][0]?.ServiceName
                     : ""
@@ -505,7 +511,7 @@ export default function Services() {
                 className="w-full bg-[#eff1f999] px-4 py-4 rounded-lg focus-visible:outline-none"
                 type="text"
                 name="ServiceUnit"
-                value={
+                defaultValue={
                   updatingRecord != null
                     ? Services[updatingRecord][0]?.ServiceUnit
                     : ""
@@ -517,7 +523,7 @@ export default function Services() {
                 type="text"
                 name="ServicePrice"
                 placeholder="Price"
-                value={
+                defaultValue={
                   updatingRecord != null
                     ? Services[updatingRecord][0]?.ServiceValue
                     : ""
