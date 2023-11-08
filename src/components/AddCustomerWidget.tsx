@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import dialcodes from "../assets/dialcodes.json";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,9 +6,6 @@ import { closePanel, updateWasRecordAdded } from "../app/customer.slice";
 
 export default function AddCustomerWidget() {
   const dispatch = useDispatch();
-  const { isCustomerDetailsPanelOpen, customerSelected } = useSelector(
-    (state: any) => state.customers
-  );
 
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);

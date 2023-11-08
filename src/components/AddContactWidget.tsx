@@ -11,14 +11,13 @@ import {
 export default function AddContact() {
   const dispatch = useDispatch();
 
+  const [addingAddress, setAddingAddress] = useState<any>(null);
   const [editingCustomer, setEditingCustomer] = useState<any>({});
 
-  const { customerSelected, editingContactID, customerSelectedIndex } = useSelector(
-    (state: any) => state.customers
-  );
+  const { customerSelected, editingContactID, customerSelectedIndex } =
+    useSelector((state: any) => state.customers);
 
   const form = useRef<HTMLFormElement>(null);
-  const zipCodeError = useRef<HTMLParagraphElement>(null);
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
@@ -26,13 +25,13 @@ export default function AddContact() {
     e.preventDefault();
 
     if (!editingCustomer) {
-      alert("Please choose the Linking Address!")
+      alert("Please choose the Linking Address!");
       return;
     }
 
     const formData = new FormData();
 
-    formData.append("addressID", editingCustomer?.AddressID);
+    formData.append("addressID", form.current?.addressLink?.value);
     formData.append("companyID", editingCustomer?.CompanyID);
 
     formData.append("contactName", form.current?.contactName.value);
@@ -60,9 +59,14 @@ export default function AddContact() {
       });
   };
 
-  useEffect(function () {
-    setEditingCustomer(customerSelected[(editingContactID?.index) ?? customerSelectedIndex]);
-  }, [editingContactID]);
+  useEffect(
+    function () {
+      setEditingCustomer(
+        customerSelected[editingContactID?.index ?? customerSelectedIndex]
+      );
+    },
+    [editingContactID]
+  );
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
@@ -166,32 +170,24 @@ export default function AddContact() {
             className="text-[#888] flex justify-between"
             htmlFor="companyName"
           >
-            <div>Add Address</div>
-            <div className="flex justify-center gap-3 text-xs">
-              <div className="flex items-center gap-0.5">
-                <input
-                  type="checkbox"
-                  disabled
-                  defaultChecked={
-                    editingCustomer?.CompanyAddressPrimary == "on"
-                  }
-                  name="companyAddressPrimary"
-                  id=""
-                />
-                <span>Primary</span>
-              </div>
-              <div className="flex items-center gap-0.5">
-                <input
-                  type="checkbox"
-                  name="companyAddressHQ"
-                  defaultChecked={editingCustomer?.CompanyAddressHQ == "on"}
-                  id=""
-                />
-                <span>HQ</span>
-              </div>
-            </div>
+            <div>Link Address</div>
           </label>
-          <div className="grid gap-2">
+
+          {/* Address Selection */}
+          <div className="pr-2 bg-white">
+            <select name="addressLink" className="p-2 cursor-pointer w-full">
+              {removeDuplicates(customerSelected, "AddressID").map(
+                (customer) => (
+                  <option value={customer.AddressID} key={customer.LinkerID}>
+                    {customer.CompanyStreetAddress}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+          {/* Address Selection End */}
+
+          {/* <div className="grid gap-2">
             <input
               required
               className="p-2 rounded-sm border"
@@ -235,7 +231,7 @@ export default function AddContact() {
               placeholder="State – 03"
               defaultValue={editingCustomer?.CompanyStateCode}
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="flex justify-between pt-8">
@@ -258,4 +254,20 @@ export default function AddContact() {
       </form>
     </div>
   );
+}
+
+function removeDuplicates(array: any[], field) {
+  let tracker = null;
+  let withoutDuplicates: any[] = [];
+
+  for (let i = 0; i < array.length; i++) {
+    if (array[i][field] == tracker) {
+      continue;
+    }
+
+    withoutDuplicates.push(array[i]);
+    tracker = array[i][field];
+  }
+
+  return withoutDuplicates;
 }

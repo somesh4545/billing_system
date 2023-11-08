@@ -71,7 +71,6 @@ export default function AddressFieldset() {
       });
 
       addressIDRef.current = undefined;
-      console.log(addresses)
       setAddresses(addresses);
     },
     [addingAnotherContact, editingAddressID, customerSelected]
