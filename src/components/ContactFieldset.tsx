@@ -99,7 +99,7 @@ export default function ContactFieldset() {
 
       setContacts(contactsComputed);
     },
-    [customerSelected, wasRecordAdded]
+    [customerSelected]
   );
 
   return (

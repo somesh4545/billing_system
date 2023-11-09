@@ -20,13 +20,16 @@ export default function UpdateAddressWidget() {
 
   const [editingCustomer, setEditingCustomer] = useState<any>({});
 
+  const [isAddressHQChecked, setIsAddressHQChecked] = useState(false);
+  const [isPrimaryAddressChecked, setIsPrimaryAddressChecked] = useState(false);
+
   const form = useRef<HTMLFormElement>(null);
   const zipCodeError = useRef<HTMLParagraphElement>(null);
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
   const handleZipCodeChange = (e: any) => {
-    const inputValue = e.target.value;
+    const inputValue = e.target?.value;
     const element = zipCodeError.current as HTMLParagraphElement;
 
     // Is numberic
@@ -73,16 +76,19 @@ export default function UpdateAddressWidget() {
 
     formData.append(
       "companyStreetAddress",
-      form.current?.companyStreetAddress.value
+      form.current?.companyStreetAddress?.value
     );
-    formData.append("companyCity", form.current?.companyCity.value);
-    formData.append("companyStateCode", form.current?.companyStateCode.value);
-    formData.append("companyZipCode", form.current?.companyZipCode.value);
+    formData.append("companyCity", form.current?.companyCity?.value);
+    formData.append("companyStateCode", form.current?.companyStateCode?.value);
+    formData.append("companyZipCode", form.current?.companyZipCode?.value);
     formData.append(
       "companyAddressPrimary",
-      form.current?.companyAddressPrimary.value
+      form.current?.companyAddressPrimary?.checked
     );
-    formData.append("companyAddressHQ", form.current?.companyAddressHQ.value);
+    formData.append(
+      "companyAddressHQ",
+      form.current?.companyAddressHQ?.checked
+    );
 
     axios({
       method: "POST",
@@ -94,6 +100,7 @@ export default function UpdateAddressWidget() {
         dispatch(updateWasRecordAdded(Math.random() * 10e6));
         dispatch(finishedAddingContactOrAddress());
         dispatch(setAddingAnotherAddress(false));
+        dispatch(closePanel());
       })
       .catch(function (response) {
         //handle error
@@ -118,6 +125,24 @@ export default function UpdateAddressWidget() {
     },
     [editingAddressID]
   );
+
+  useEffect(
+    function () {
+      setIsAddressHQChecked(editingCustomer.CompanyAddressHQ == "true");
+      setIsPrimaryAddressChecked(
+        editingCustomer.CompanyAddressPrimary == "true"
+      );
+    },
+    [editingCustomer]
+  );
+
+  const changeCheckboxValue = (value, checkbox) => {
+    if (checkbox == "P") {
+      setIsPrimaryAddressChecked(value);
+    } else if (checkbox == "HQ") {
+      setIsAddressHQChecked(value);
+    }
+  };
 
   return (
     <div className="bg-blue-50 p-4 rounded-sm">
@@ -234,19 +259,20 @@ export default function UpdateAddressWidget() {
               <div className="flex items-center gap-0.5">
                 <input
                   type="checkbox"
-                  defaultChecked={editingCustomer.CompanyAddressPrimary == "on"}
+                  checked={isPrimaryAddressChecked}
                   name="companyAddressPrimary"
-                  id=""
+                  onChange={(e) => changeCheckboxValue(e.target.checked, "P")}
                 />
                 <span>Primary</span>
               </div>
               <div className="flex items-center gap-0.5">
                 <input
                   type="checkbox"
-                  defaultChecked={editingCustomer.CompanyAddressHQ == "on"}
+                  checked={isAddressHQChecked}
                   name="companyAddressHQ"
-                  id=""
+                  onChange={(e) => changeCheckboxValue(e.target.checked, "HQ")}
                 />
+
                 <span>HQ</span>
               </div>
             </div>

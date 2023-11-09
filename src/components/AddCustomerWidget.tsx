@@ -13,7 +13,7 @@ export default function AddCustomerWidget() {
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
 
   const handleZipCodeChange = (e: any) => {
-    const inputValue = e.target.value;
+    const inputValue = e.target?.value;
     const element = zipCodeError.current as HTMLParagraphElement;
 
     // Is numberic
@@ -56,30 +56,30 @@ export default function AddCustomerWidget() {
 
     const formData = new FormData();
 
-    formData.append("companyName", form.current?.companyName.value);
+    formData.append("companyName", form.current?.companyName?.value);
     formData.append(
       "companyEmployeeCount",
-      form.current?.companyEmployeeCount.value
+      form.current?.companyEmployeeCount?.value
     );
     formData.append(
       "companyStreetAddress",
-      form.current?.companyStreetAddress.value
+      form.current?.companyStreetAddress?.value
     );
-    formData.append("companyCity", form.current?.companyCity.value);
-    formData.append("companyStateCode", form.current?.companyStateCode.value);
-    formData.append("companyZipCode", form.current?.companyZipCode.value);
+    formData.append("companyCity", form.current?.companyCity?.value);
+    formData.append("companyStateCode", form.current?.companyStateCode?.value);
+    formData.append("companyZipCode", form.current?.companyZipCode?.value);
     formData.append(
       "companyAddressPrimary",
-      form.current?.companyAddressPrimary.value
+      form.current?.companyAddressPrimary?.checked
     );
-    formData.append("companyAddressHQ", form.current?.companyAddressHQ.value);
-    formData.append("contactName", form.current?.contactName.value);
-    formData.append("contactEmail", form.current?.contactEmail.value);
+    formData.append("companyAddressHQ", form.current?.companyAddressHQ?.checked);
+    formData.append("contactName", form.current?.contactName?.value);
+    formData.append("contactEmail", form.current?.contactEmail?.value);
     formData.append(
       "contactPhonePrefix",
-      form.current?.contactPhonePrefix.value
+      form.current?.contactPhonePrefix?.value
     );
-    formData.append("contactPhone", form.current?.contactPhone.value);
+    formData.append("contactPhone", form.current?.contactPhone?.value);
 
     axios({
       method: "POST",
