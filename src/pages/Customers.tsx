@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import CustomersStatusWidget from "../components/CustomersStatusWidget";
 import CustomersBillingStatusWidget from "../components/CustomersBillingStatusWidget";
 import CustomersListHeadings from "../components/CustomersListHeadings";
@@ -9,12 +9,21 @@ import {
   openPanel,
   setAddingAnotherAddress,
   setAddingAnotherContact,
+  setCustomerDetailsPanelOpen,
+  setCustomerSelectedIndex,
+  setEditingAddressID,
+  setEditingContactID,
+  setLoadedCustomers,
+  setSearchValue,
+  setSelectedCustomer,
+  updateWasRecordAdded,
 } from "../app/customer.slice";
 import ContactsList from "../components/ContactsList";
 import UpdateCustomer from "../components/UpdateCustomerWidget";
 import AddContact from "../components/AddContactWidget";
 import AddAddress from "../components/AddAddressWidget";
 import UpdateAddressWidget from "../components/UpdateAddressWidget";
+import Pagination from "../components/Pagination";
 
 export default function Customers() {
   const dispatch = useDispatch();
@@ -28,9 +37,34 @@ export default function Customers() {
     editingContactID,
   } = useSelector((state: any) => state.customers);
 
-  const reset = () => {
-    dispatch(setAddingAnotherContact(false));
-    dispatch(setAddingAnotherAddress(false));
+  const [records, setRecords] = useState<number>(0);
+  const [lastRecord, setLastRecord] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [recordsCursor, setRecordsCursor] = useState<number>(0);
+
+  const resetAll = function () {
+    dispatch(setSearchValue(""));
+    dispatch(setLoadedCustomers([]));
+    dispatch(setEditingAddressID(null));
+    dispatch(setEditingContactID(null));
+    dispatch(setSelectedCustomer(null));
+    dispatch(setAddingAnotherAddress(null));
+    dispatch(setAddingAnotherContact(null));
+    dispatch(setCustomerSelectedIndex(null));
+    dispatch(setCustomerDetailsPanelOpen(false));
+  };
+
+  const renderNextPage = () => {
+    resetAll();
+    setPageNumber((pageNumber) => pageNumber + 1);
+    dispatch(updateWasRecordAdded(Math.random()));
+  };
+
+  const renderPreviousPage = () => {
+    resetAll();
+    setLastRecord(recordsCursor);
+    setPageNumber((pageNumber) => pageNumber - 1);
+    dispatch(updateWasRecordAdded(Math.random()));
   };
 
   return (
@@ -65,7 +99,12 @@ export default function Customers() {
                 : ""
             }
           >
-            <CustomersList />
+            <CustomersList
+              setRecords={setRecords}
+              lastRecord={lastRecord}
+              setLastRecord={setLastRecord}
+              setRecordsCursor={setRecordsCursor}
+            />
             {isCustomerDetailsPanelOpen && <ContactsList />}
             {isPanelOpen && !isCustomerDetailsPanelOpen && (
               <AddCustomerWidget />
@@ -82,6 +121,16 @@ export default function Customers() {
             {!addingAnotherContact && addingAnotherAddress && <AddAddress />}
             {!!editingAddressID && <UpdateAddressWidget />}
           </div>
+          {/* <div className="border-t pt-4">
+            <Pagination
+              from={(pageNumber - 1) * 10}
+              count={records}
+              pageNumber={pageNumber}
+              onChooseNextPage={renderNextPage}
+              onChoosePreviousPage={renderPreviousPage}
+              limit={pageNumber * 10 > records ? records : pageNumber * 10}
+            />
+          </div> */}
         </div>
       </div>
     </div>

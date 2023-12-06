@@ -11,10 +11,9 @@ import {
 export default function AddContact() {
   const dispatch = useDispatch();
 
-  const [addingAddress, setAddingAddress] = useState<any>(null);
   const [editingCustomer, setEditingCustomer] = useState<any>({});
 
-  const { customerSelected, editingContactID, customerSelectedIndex } =
+  const { customerSelected, editingContactID } =
     useSelector((state: any) => state.customers);
 
   const form = useRef<HTMLFormElement>(null);
@@ -23,11 +22,6 @@ export default function AddContact() {
 
   const addContact = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!editingCustomer) {
-      alert("Please choose the Linking Address!");
-      return;
-    }
 
     const formData = new FormData();
 
@@ -51,6 +45,7 @@ export default function AddContact() {
       .then(function (response) {
         dispatch(updateWasRecordAdded(Math.random() * 10e6));
         dispatch(finishedAddingContactOrAddress());
+        dispatch(closePanel());
       })
       .catch(function (response) {
         //handle error
@@ -62,7 +57,7 @@ export default function AddContact() {
   useEffect(
     function () {
       setEditingCustomer(
-        customerSelected[editingContactID?.index ?? customerSelectedIndex]
+        customerSelected[editingContactID?.index ?? 0]
       );
     },
     [editingContactID]

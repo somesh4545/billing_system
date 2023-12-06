@@ -6,53 +6,13 @@ import { closePanel, updateWasRecordAdded } from "../app/customer.slice";
 
 export default function UpdateCustomer({ editingAddressID, editingContactID }) {
   const dispatch = useDispatch();
+  const [editingCustomer, setEditingCustomer] = useState<any>({});
   const { customerSelected } = useSelector((state: any) => state.customers);
 
-  const [editingCustomer, setEditingCustomer] = useState<any>({});
-
   const form = useRef<HTMLFormElement>(null);
-  const zipCodeError = useRef<HTMLParagraphElement>(null);
+
   // @ts-ignore
   const apiBaseURL = import.meta.env.VITE_API_BASEURL;
-
-  const handleZipCodeChange = (e: any) => {
-    const inputValue = e.target.value;
-    const element = zipCodeError.current as HTMLParagraphElement;
-
-    // Is numberic
-    if (
-      /\d/gm.test(inputValue) &&
-      (/-/gm.test(inputValue) || !/\D/.test(inputValue))
-    ) {
-      if (/-/gm.test(inputValue)) {
-        inputValue.length != 10
-          ? (element.innerHTML =
-              "<div class='pt-1'>The ZIP code must be in the format 00000-0000.</div>")
-          : (element.innerHTML = "");
-
-        return;
-      }
-
-      inputValue.length != 5
-        ? (element.innerHTML =
-            "<div class='pt-1'>The ZIP code must be in the format 00000.</div>")
-        : (element.innerHTML = "");
-
-      return;
-    }
-
-    // Input is alphanumeric
-    if (/\w/gm.test(inputValue)) {
-      inputValue.length != 10
-        ? (element.innerHTML =
-            "<div class='pt-1'>The ZIP code must be alphanumeric and consist of exactly 10 characters.</div>")
-        : (element.innerHTML = "");
-
-      return;
-    }
-
-    element.innerHTML = "";
-  };
 
   const updateCustomer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,33 +20,24 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
     const formData = new FormData();
 
     formData.append("companyID", editingCustomer?.CompanyID);
-    formData.append("addressID", editingCustomer?.AddressID);
+    formData.append("addressID", form.current?.addressLink?.value);
     formData.append("contactID", editingCustomer?.ContactID);
 
-    formData.append("companyName", form.current?.companyName.value);
+    formData.append("companyName", form.current?.companyName?.value);
     formData.append(
       "companyEmployeeCount",
-      form.current?.companyEmployeeCount.value
+      form.current?.companyEmployeeCount?.value
     );
-    formData.append(
-      "companyStreetAddress",
-      form.current?.companyStreetAddress.value
-    );
-    formData.append("companyCity", form.current?.companyCity.value);
-    formData.append("companyStateCode", form.current?.companyStateCode.value);
-    formData.append("companyZipCode", form.current?.companyZipCode.value);
-    formData.append(
-      "companyAddressPrimary",
-      form.current?.companyAddressPrimary.value
-    );
-    formData.append("companyAddressHQ", form.current?.companyAddressHQ.value);
-    formData.append("contactName", form.current?.contactName.value);
-    formData.append("contactEmail", form.current?.contactEmail.value);
+
+    formData.append("updatingLink", "true");
+
+    formData.append("contactName", form.current?.contactName?.value);
+    formData.append("contactEmail", form.current?.contactEmail?.value);
     formData.append(
       "contactPhonePrefix",
-      form.current?.contactPhonePrefix.value
+      form.current?.contactPhonePrefix?.value
     );
-    formData.append("contactPhone", form.current?.contactPhone.value);
+    formData.append("contactPhone", form.current?.contactPhone?.value);
 
     axios({
       method: "POST",
@@ -101,7 +52,6 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
       .catch(function (response) {
         //handle error
         dispatch(closePanel());
-        console.log(response);
       });
   };
 
@@ -112,194 +62,164 @@ export default function UpdateCustomer({ editingAddressID, editingContactID }) {
     [editingContactID]
   );
 
-  return editingContactID && (
-    <div className={"bg-blue-50 p-4 rounded-sm" + " " + editingAddressID}>
-      <h2>Update Customer Details</h2>
+  return (
+    editingContactID && (
+      <div className={"bg-blue-50 p-4 rounded-sm" + " " + editingAddressID}>
+        <h2>Update Customer Details</h2>
 
-      <form
-        ref={form}
-        method="POST"
-        onSubmit={updateCustomer}
-        className="mt-6 flex flex-col gap-3"
-      >
-        <div className="grid gap-1">
-          <label className="text-[#888]" htmlFor="companyName">
-            Add company info
-          </label>
-          <div className="w-full grid grid-cols-2 gap-2">
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="text"
-              defaultValue={editingCustomer?.CompanyName}
-              tabIndex={1}
-              name="companyName"
-              placeholder="Name"
-            />
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="number"
-              tabIndex={2}
-              defaultValue={editingCustomer?.CompanyEmployeeCount}
-              name="companyEmployeeCount"
-              placeholder="No of Employees"
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-1">
-          <label className="text-[#888]" htmlFor="companyName">
-            Contact Information
-          </label>
-          <div className="grid gap-2">
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="text"
-              tabIndex={3}
-              name="contactName"
-              defaultValue={editingCustomer?.ContactName}
-              placeholder="Contact Name"
-            />
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="text"
-              tabIndex={3}
-              name="contactEmail"
-              defaultValue={editingCustomer?.ContactEmail}
-              placeholder="Contact Email"
-            />
-            <div className="w-full grid grid-cols-[auto_1fr] gap-2">
-              <div className="pr-2 bg-white w-full border rounded-sm">
-                <select
-                  tabIndex={5}
-                  name="contactPhonePrefix"
-                  className="font-mono w-full p-2.5 cursor-pointer"
-                >
-                  <option value={"1"}>US(+1)</option>
-                  {dialcodes
-                    .sort((a, b) => {
-                      if (a.code < b.code) return -1;
-                      if (a.code > b.code) return 1;
-                      return 0;
-                    })
-                    .map((code) =>
-                      code.code === "US" ? null : (
-                        <option
-                          defaultValue={editingCustomer?.ContactPhonePrefix}
-                          key={code.code}
-                          value={code.dial_code.replace("+", "")}
-                        >
-                          {code.code}({code.dial_code})
-                        </option>
-                      )
-                    )}
-                </select>
-              </div>
+        <form
+          ref={form}
+          method="POST"
+          onSubmit={updateCustomer}
+          className="mt-6 flex flex-col gap-3"
+        >
+          <div className="grid gap-1">
+            <label className="text-[#888]" htmlFor="companyName">
+              Add company info
+            </label>
+            <div className="w-full grid grid-cols-2 gap-2">
+              <input
+                required
+                className="p-2 rounded-sm border"
+                type="text"
+                defaultValue={editingCustomer?.CompanyName}
+                tabIndex={1}
+                name="companyName"
+                placeholder="Name"
+              />
               <input
                 required
                 className="p-2 rounded-sm border"
                 type="number"
-                tabIndex={6}
-                name="contactPhone"
-                defaultValue={editingCustomer?.ContactPhone}
-                placeholder="1234567890"
+                tabIndex={2}
+                defaultValue={editingCustomer?.CompanyEmployeeCount}
+                name="companyEmployeeCount"
+                placeholder="No of Employees"
               />
             </div>
           </div>
-        </div>
 
-        <div className="grid gap-1">
-          <label
-            className="text-[#888] flex justify-between"
-            htmlFor="companyName"
-          >
-            <div>Add Address</div>
-            <div className="flex justify-center gap-3 text-xs">
-              <div className="flex items-center gap-0.5">
-                <input
-                  type="checkbox"
-                  defaultChecked={editingCustomer?.CompanyAddressPrimary}
-                  name="companyAddressPrimary"
-                  id=""
-                />
-                <span>Primary</span>
-              </div>
-              <div className="flex items-center gap-0.5">
-                <input
-                  type="checkbox"
-                  name="companyAddressHQ"
-                  defaultChecked={editingCustomer?.CompanyAddressHQ}
-                  id=""
-                />
-                <span>HQ</span>
-              </div>
-            </div>
-          </label>
-          <div className="grid gap-2">
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="text"
-              tabIndex={7}
-              name="companyStreetAddress"
-              placeholder="Street Name"
-              defaultValue={editingCustomer?.CompanyStreetAddress}
-            />
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="text"
-              tabIndex={8}
-              name="companyCity"
-              defaultValue={editingCustomer?.CompanyCity}
-              placeholder="City"
-            />
-            <div className="w-full">
+          <div className="grid gap-1">
+            <label className="text-[#888]" htmlFor="companyName">
+              Contact Information
+            </label>
+            <div className="grid gap-2">
               <input
                 required
-                className="p-2 rounded-sm border w-full"
+                className="p-2 rounded-sm border"
                 type="text"
-                defaultValue={editingCustomer?.CompanyZipCode}
-                tabIndex={9}
-                name="companyZipCode"
-                onChange={handleZipCodeChange}
-                placeholder="ZIP Code"
+                tabIndex={3}
+                name="contactName"
+                defaultValue={editingCustomer?.ContactName}
+                placeholder="Contact Name"
               />
-              <p className="text-xs text-rose-800" ref={zipCodeError}></p>
+              <input
+                required
+                className="p-2 rounded-sm border"
+                type="text"
+                tabIndex={3}
+                name="contactEmail"
+                defaultValue={editingCustomer?.ContactEmail}
+                placeholder="Contact Email"
+              />
+              <div className="w-full grid grid-cols-[auto_1fr] gap-2">
+                <div className="pr-2 bg-white w-full border rounded-sm">
+                  <select
+                    tabIndex={5}
+                    name="contactPhonePrefix"
+                    className="font-mono w-full p-2.5 cursor-pointer"
+                  >
+                    <option value={"1"}>US(+1)</option>
+                    {dialcodes
+                      .sort((a, b) => {
+                        if (a.code < b.code) return -1;
+                        if (a.code > b.code) return 1;
+                        return 0;
+                      })
+                      .map((code) =>
+                        code.code === "US" ? null : (
+                          <option
+                            defaultValue={editingCustomer?.ContactPhonePrefix}
+                            key={code.code}
+                            value={code.dial_code.replace("+", "")}
+                          >
+                            {code.code}({code.dial_code})
+                          </option>
+                        )
+                      )}
+                  </select>
+                </div>
+                <input
+                  required
+                  className="p-2 rounded-sm border"
+                  type="number"
+                  tabIndex={6}
+                  name="contactPhone"
+                  defaultValue={editingCustomer?.ContactPhone}
+                  placeholder="1234567890"
+                />
+              </div>
             </div>
-            <input
-              required
-              className="p-2 rounded-sm border"
-              type="text"
-              tabIndex={10}
-              name="companyStateCode"
-              placeholder="State – 03"
-              defaultValue={editingCustomer?.CompanyStateCode}
-            />
           </div>
-        </div>
 
-        <div className="flex justify-between pt-8">
-          <button
-            className="bg-rose-100 py-2 px-4 rounded cursor-pointer hover:bg-rose-200"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(closePanel());
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-200 py-2 px-4 rounded cursor-pointer hover:bg-blue-300"
-          >
-            Save
-          </button>
-        </div>
-      </form>
-    </div>
+          <div className="grid gap-1">
+            <label
+              className="text-[#888] flex justify-between"
+              htmlFor="companyName"
+            >
+              <div>Link Address</div>
+            </label>
+
+            {/* Address Selection */}
+            <div className="pr-2 bg-white">
+              <select name="addressLink" className="p-2 cursor-pointer w-full">
+                {removeDuplicates(customerSelected, "AddressID").map(
+                  (customer) => (
+                    <option value={customer.AddressID} key={customer.LinkerID}>
+                      {customer.CompanyStreetAddress}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+            {/* Address Selection End */}
+          </div>
+
+          <div className="flex justify-between pt-8">
+            <button
+              className="bg-rose-100 py-2 px-4 rounded cursor-pointer hover:bg-rose-200"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(closePanel());
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-200 py-2 px-4 rounded cursor-pointer hover:bg-blue-300"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    )
   );
+}
+
+function removeDuplicates(array: any[], field) {
+  let tracker = null;
+  let withoutDuplicates: any[] = [];
+
+  for (let i = 0; i < array.length; i++) {
+    if (array[i][field] == tracker) {
+      continue;
+    }
+
+    withoutDuplicates.push(array[i]);
+    tracker = array[i][field];
+  }
+
+  return withoutDuplicates;
 }

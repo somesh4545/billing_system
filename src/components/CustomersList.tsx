@@ -10,7 +10,12 @@ import {
   setSelectedCustomer,
 } from "../app/customer.slice";
 
-export default function CustomersList() {
+export default function CustomersList({
+  setRecords,
+  lastRecord,
+  setLastRecord,
+  setRecordsCursor,
+}) {
   const dispatch = useDispatch();
 
   // @ts-ignore
@@ -27,12 +32,17 @@ export default function CustomersList() {
   } = useSelector((state: any) => state.customers);
 
   const getCustomers = async function () {
-    const request = axios.get(`${apiBaseURL}/api/customers/list`);
+    const request = axios.get(
+      `${apiBaseURL}/api/customers/list?lastRecord=${lastRecord}`
+    );
     const { data } = await request;
 
     if (data?.status == true) {
       const companies: any = {};
       let currentID: number | null = null;
+
+      setRecords(data.count);
+      setLastRecord(data.lastRecord.LinkerID);
 
       data.results.map((result: Company) => {
         if (result.CompanyID != currentID) currentID = result.CompanyID;
@@ -48,8 +58,19 @@ export default function CustomersList() {
 
       const companiesValue: any = Object.values(companies);
 
+      const previousLinkerID: number | null = customers.length > 0
+        ? customers[0][0].LinkerID - 1
+        : null;
+
       setCustomers(companiesValue);
       dispatch(setLoadedCustomers(companiesValue));
+
+      const currentLinkerID: number | null = companiesValue.length > 0
+      ? companiesValue[0][0].LinkerID - 1
+      : null;
+
+      console.log(previousLinkerID, currentLinkerID);
+      setRecordsCursor(previousLinkerID)
 
       if (customerSelectedIndex >= 0) {
         dispatch(setSelectedCustomer(companiesValue[customerSelectedIndex]));
@@ -242,14 +263,25 @@ export default function CustomersList() {
                   </td>
                 </>
               ) : (
-                <td>
-                  <button
-                    onClick={() => loadDefaultView()}
-                    className="cusor-pointer border-b border-dotted border-[#aaa] preventDefault"
-                  >
-                    More
-                  </button>
-                </td>
+                <>
+                  <td>
+                    <button
+                      onClick={() => loadDefaultView()}
+                      className="cusor-pointer border-b border-dotted border-[#aaa] preventDefault"
+                    >
+                      More
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      disabled
+                      onClick={() => loadDefaultView()}
+                      className="cusor-pointer border-b border-dotted border-[#aaa] preventDefault"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </>
               )}
             </tr>
           ))}

@@ -15,7 +15,6 @@ export default function UpdateAddressWidget() {
     customerSelected,
     editingAddressID,
     addingAnotherAddress,
-    customerSelectedIndex,
   } = useSelector((state: any) => state.customers);
 
   const [editingCustomer, setEditingCustomer] = useState<any>({});
@@ -104,6 +103,7 @@ export default function UpdateAddressWidget() {
       })
       .catch(function (response) {
         //handle error
+        alert(response.message);
         dispatch(finishedAddingContactOrAddress());
         dispatch(setAddingAnotherAddress(false));
         dispatch(closePanel());
@@ -120,7 +120,7 @@ export default function UpdateAddressWidget() {
         });
       } else
         setEditingCustomer(
-          customerSelected[editingAddressID?.index ?? customerSelectedIndex]
+          customerSelected[editingAddressID?.index ?? 0]
         );
     },
     [editingAddressID]
@@ -128,9 +128,9 @@ export default function UpdateAddressWidget() {
 
   useEffect(
     function () {
-      setIsAddressHQChecked(editingCustomer.CompanyAddressHQ == "true");
+      setIsAddressHQChecked(editingCustomer?.CompanyAddressHQ == "true");
       setIsPrimaryAddressChecked(
-        editingCustomer.CompanyAddressPrimary == "true"
+        editingCustomer?.CompanyAddressPrimary == "true"
       );
     },
     [editingCustomer]
